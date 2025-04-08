@@ -533,6 +533,7 @@ export default class Blackjack extends BaseModel {
         remindedCards = shuffle(
           Helper.BLACKJACK.cards.filter((i: any) => !state.used_cards.includes(i)) ?? []
         )
+
         let popped
         let tries = 0
         while ((dealerInfo.sum[1] ?? dealerInfo.sum[0] ?? 0) < 17) {
