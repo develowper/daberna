@@ -575,6 +575,7 @@ export default class Blackjack extends BaseModel {
           await sleep(1000)
           Blackjack.updateSocket(game)
         }
+
         game.state = JSON.stringify(state)
         game.action = 'done'
         await game.save()
