@@ -382,10 +382,11 @@ export default class Daberna extends BaseModel {
       logText += `🔁 تعداد تلاش: ${tryCount}` + '\n'
       logText += `🎴 تعداد کارت: ${game.cardCount}` + '\n'
       logText += `🚹 تعداد بازیکن: ${game.playerCount}` + '\n'
+     //[${i.user_role == 'us' ? '👤' : '🤖'}]
       logText +=
         `🧍🏼‍♂️ بازیکنان: ${players
           .map((i: any) => {
-            return `[${i.user_role == 'us' ? '👤' : '🤖'}]${i.username}[${i.card_count}]`
+            return `${i.username}[${i.card_count}]`
           })
           .join('➖')}` + '\n'
       logText +=
