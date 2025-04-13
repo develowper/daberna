@@ -43,7 +43,7 @@ export default class DailyReport extends BaseCommand {
     const time = Intl.DateTimeFormat('fa-IR', options).format(DateTime.now().toJSDate())
     msg += `    💎${process.env.APP_NAME}💎    \n${time}\n`
     msg += '\u200F➖➖➖➖➖➖➖➖➖➖➖\n'
-
+    await Telegram.sendMessage(`${Helper.TELEGRAM_LOGS[0]}`, msg)
     //clear
     if (clearPeriodDay > 0) {
       const daberna = await Daberna.query().where(
@@ -94,7 +94,7 @@ export default class DailyReport extends BaseCommand {
     msg += '📊 گزارشات پاک شده: ' + logsLen + '\n'
     msg += '💵 تراکنش های پاک شده: ' + transLen + '\n'
     msg += '\u200F➖➖➖➖➖➖➖➖➖➖➖\n'
-
+    await Telegram.sendMessage(`${Helper.TELEGRAM_LOGS[0]}`, msg)
     const uc = await User.query()
       .where('created_at', '>', now.minus({ hours: 24 }).toJSDate())
       .count('* as total')
@@ -117,6 +117,7 @@ export default class DailyReport extends BaseCommand {
     //       return tmp
     //     })
     //     .join('\n') + '\n'
+    await Telegram.sendMessage(`${Helper.TELEGRAM_LOGS[0]}`, msg)
     const filteredTypes =
       Helper.ROOMS.filter((item) => item.game == 'daberna').map((item) => item.type.slice(1)) ?? []
 
