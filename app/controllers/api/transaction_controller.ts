@@ -21,7 +21,7 @@ import Daberna from '#models/daberna'
 export default class TransactionsController {
   //
   async create({ request, response, auth, i18n }: HttpContext) {
-    const amount = request.input('amount')
+    const amount = Helper.f2e(request.input('amount'))
     const type = request.input('type')
     const fromType = request.input('from_type')
     const user = auth.user
