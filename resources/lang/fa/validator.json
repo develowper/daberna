@@ -18,6 +18,7 @@
       "string": "{field} ضروری است",
       "required": "{field} ضروری است",
       "unique": "{field} تکراری است",
+      "number": "{field} عددی باشد",
       "database.unique": "{field} تکراری است",
       "fixedLength": "طول {field} {size} باشد",
       "regex": "{field} نامعتبر است",
