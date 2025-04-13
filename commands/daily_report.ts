@@ -144,6 +144,7 @@ export default class DailyReport extends BaseCommand {
       acc[`today_card_${type}_count`] = 0
       return acc
     }, {})
+
     await Telegram.sendMessage(`${Helper.TELEGRAM_LOGS[0]}`, msg)
     // await Telegram.sendMessage(`${Helper.TELEGRAM_LOGS[1]}`, msg)
     // await Telegram.logAdmins(msg, null, Helper.TELEGRAM_TOPICS.STATISTICS)
