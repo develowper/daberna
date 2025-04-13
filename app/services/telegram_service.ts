@@ -8,7 +8,7 @@ import TelegramEvent from '#events/telegram_event'
 
 export default class Telegram {
   ///
-  private static topic: ;
+  private static topic: any
 
   public static log(to: any, type: string, data: any) {
     TelegramEvent.dispatch(to, type, data)
@@ -70,7 +70,7 @@ export default class Telegram {
           break
 
         case 'transaction_created':
-          this.topic =null /*Helper.TELEGRAM_TOPICS.TRANSACTION*/
+          this.topic = null /*Helper.TELEGRAM_TOPICS.TRANSACTION*/
 
           if (data.amount > 0) msg += '🟢🟢🟢🛒 یک تراکنش انجام شد\n'
           else msg += '🟠🟠🟠🛒 یک پلن خریداری شد\n'
