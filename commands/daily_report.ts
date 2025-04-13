@@ -20,6 +20,7 @@ export default class DailyReport extends BaseCommand {
 
   static reportTime = DateTime.fromObject({ hour: 2, minute: 0 }, { zone: 'Asia/Tehran' })
   async run() {
+    await Telegram.sendMessage(`${Helper.TELEGRAM_LOGS[0]}`, 'msg')
     const now = DateTime.now().setZone('Asia/Tehran')
     // if (now.hour !== DailyReport.reportTime.hour || now.minute !== DailyReport.reportTime.minute) {
     //   process.exit()
