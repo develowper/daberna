@@ -149,7 +149,7 @@ export default class Room extends BaseModel {
     let res: any[] = []
     const parsed: any = JSON.parse(this.players ?? '[]') ?? []
     const beforeExists = collect(parsed).first(
-      (item: any) => item.user_id == (user.id ?? user.user_id)
+      (item: any) => item.user_id == (user?.id ?? user.user_id)
     )
     res = parsed
 
