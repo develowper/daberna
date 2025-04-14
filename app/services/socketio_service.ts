@@ -106,7 +106,7 @@ export default class SocketIo {
       })
       socket.on('leave-room', async (data) => {
         // logger.info(data)
-        if (!data) return
+        if (!data || !this.user) return
         socket.leave(`room-${data?.type}`)
         const room = await Room.query().where('type', data?.type).first()
         if (room) await room.setUser(this.user, 'remove')
