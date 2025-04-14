@@ -14,6 +14,8 @@ export default class extends BaseSchema {
       table.json('row_winners').nullable()
       table.integer('player_count').unsigned().defaultTo(0)
       table.integer('card_count').unsigned().defaultTo(0)
+      table.integer('real_prize').defaultTo(0)
+      table.integer('real_total_money').defaultTo(0)
       table.timestamps()
     })
   }

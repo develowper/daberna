@@ -152,11 +152,11 @@ export default class BotController {
         fromId != Helper.TELEGRAM_LOGS[0] &&
         !(await Telegram.isMember(`@${Helper.TELEGRAM_CHANNEL}`, fromId))
       ) {
-        await Telegram.sendMessage(
-          fromId,
-          'عیدی بیت پین برای شما:\n' + 'https://bitpin.ir/signup/?refcode=6jglwabmtn',
-          null
-        )
+        // await Telegram.sendMessage(
+        //   fromId,
+        //   'عیدی بیت پین برای شما:\n' + 'https://bitpin.ir/signup/?refcode=6jglwabmtn',
+        //   null
+        // )
 
         // await Telegram.sendMessage(fromId, 'http://t.me/gapoGramBot?start=73tIM', null, null, null)
         msg = '📌 *جهت استفاده از ربات و دریافت پیام های اطلاع رسانی در کانال برنامه عضو شوید*'
