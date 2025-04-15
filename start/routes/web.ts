@@ -22,15 +22,26 @@ import collect from 'collect.js'
 export default function () {
   router.get('test', async () => {
     return
+    return collect(JSON.parse((await Setting.findBy({ key: 'gateways' }))?.value ?? '[]'))
+      .where('key', 'ZARINPAL')
+      .where('active', 1)
+      .random()?.value
     return await Setting.create({
-      key: 'blackjack_help',
-      title: __('blackjack_help'),
+      key: 'gateways',
+      title: __('pay_gates'),
       value: JSON.stringify([
-        { icon: 'help_blackjack', text: __('help_blackjack') },
-        { icon: 'hit', text: __('help_hit') },
-        { icon: 'stand', text: __('help_stand') },
-        { icon: 'split', text: __('help_split') },
-        { icon: 'double', text: __('help_double') },
+        {
+          key: 'ZARINPAL',
+          active: 1,
+          title: '1',
+          value: '3697ceb2-033d-4141-b11a-23cf52c9b84b',
+        },
+        {
+          key: 'ZARINPAL',
+          active: 0,
+          title: '2',
+          value: '409f93d6-e4ae-4ea1-a33f-a03533a9ae08',
+        },
       ]),
     })
     // return DabernaController.search()

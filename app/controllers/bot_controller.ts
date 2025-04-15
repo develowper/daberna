@@ -157,7 +157,6 @@ export default class BotController {
         //   'عیدی بیت پین برای شما:\n' + 'https://bitpin.ir/signup/?refcode=6jglwabmtn',
         //   null
         // )
-
         // await Telegram.sendMessage(fromId, 'http://t.me/gapoGramBot?start=73tIM', null, null, null)
         msg = '📌 *جهت استفاده از ربات و دریافت پیام های اطلاع رسانی در کانال برنامه عضو شوید*'
         res = await Telegram.sendMessage(

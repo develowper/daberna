@@ -3,6 +3,8 @@ import { BaseModel, column } from '@adonisjs/lucid/orm'
 import Helper, { __ } from '#services/helper_service'
 import Env from '#start/env'
 import axios from 'axios'
+import collect from 'collect.js'
+import Setting from '#models/setting'
 export default class Transaction extends BaseModel {
   @column({ isPrimary: true })
   declare id: number
@@ -100,7 +102,7 @@ export default class Transaction extends BaseModel {
       switch (bank) {
         case 'zarinpal':
           const zarinpalData = {
-            merchant_id: Env.get('ZARINPAL_TOKEN'),
+            merchant_id: (await Transaction.getAPI('ZARINPAL')) ?? Env.get('ZARINPAL_TOKEN'),
             amount: `${price}0`,
             callback_url: `https://${Env.get('APP_URL')}/api/payment/done`,
             description: description,
@@ -244,7 +246,7 @@ export default class Transaction extends BaseModel {
           let result: any = {}
           if (request && request.input('Status') === 'OK') {
             const data = {
-              merchant_id: Env.get('ZARINPAL_TOKEN'),
+              merchant_id: (await Transaction.getAPI('ZARINPAL')) ?? Env.get('ZARINPAL_TOKEN'),
               amount:
                 ((await Transaction.query().where('pay_id', request.input('Authority')).first())
                   ?.amount ?? 0) * 10,
@@ -341,5 +343,12 @@ export default class Transaction extends BaseModel {
         message: __('problem_confirm_pay'),
       }
     }
+  }
+
+  static async getAPI(key) {
+    return collect(JSON.parse((await Setting.findBy({ key: 'gateways' }))?.value ?? '[]'))
+      .where('key', key)
+      .where('active', 1)
+      .random()?.value
   }
 }

@@ -699,6 +699,24 @@ class Helper {
           { icon: 'double', text: __('help_double') },
         ]),
       },
+      {
+        key: 'gateways',
+        title: __('pay_gates'),
+        value: JSON.stringify([
+          {
+            key: 'ZARINPAL',
+            active: 1,
+            title: '1',
+            value: '3697ceb2-033d-4141-b11a-23cf52c9b84b',
+          },
+          {
+            key: 'ZARINPAL',
+            active: 1,
+            title: '2',
+            value: '409f93d6-e4ae-4ea1-a33f-a03533a9ae08',
+          },
+        ]),
+      },
       // {
       //   key: 'enamad',
       //   value: Helper.ENAMAD,
