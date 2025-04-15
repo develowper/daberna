@@ -103,7 +103,7 @@ export default class Transaction extends BaseModel {
         case 'zarinpal':
           const gateway = await Transaction.getAPI('ZARINPAL')
           const zarinpalData = {
-            merchant_id: gateway?.key ?? Env.get('ZARINPAL_TOKEN'),
+            merchant_id: gateway?.key /*?? Env.get('ZARINPAL_TOKEN')*/,
             amount: `${price}0`,
             callback_url: `https://${Env.get('APP_URL')}/api/payment/done`,
             description: description,
@@ -249,8 +249,10 @@ export default class Transaction extends BaseModel {
           if (request && request.input('Status') === 'OK') {
             const t = await Transaction.query().where('pay_id', request.input('Authority')).first()
             const data = {
-              merchant_id:
-                (await Transaction.getAPI('ZARINPAL', t?.info)) ?? Env.get('ZARINPAL_TOKEN'),
+              merchant_id: await Transaction.getAPI(
+                'ZARINPAL',
+                t?.info
+              ) /*?? Env.get('ZARINPAL_TOKEN')*/,
               amount: (t?.amount ?? 0) * 10,
               authority: request.input('Authority'),
             }
