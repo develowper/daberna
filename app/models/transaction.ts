@@ -27,6 +27,8 @@ export default class Transaction extends BaseModel {
   @column()
   declare gateway: string
   @column()
+  declare gatewayId: any
+  @column()
   declare amount: number
   @column()
   declare info: any
@@ -252,7 +254,7 @@ export default class Transaction extends BaseModel {
             const data = {
               merchant_id: await Transaction.getAPI(
                 'ZARINPAL',
-                t?.info
+                t?.gatewayId
               ) /*?? Env.get('ZARINPAL_TOKEN')*/,
               amount: (t?.amount ?? 0) * 10,
               authority: request.input('Authority'),

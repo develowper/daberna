@@ -92,7 +92,7 @@ export default class TransactionsController {
           toId: user?.id,
           amount: amount,
           payId: res.order_id,
-          info: res.gateway_id,
+          gatewayId: res.gateway_id,
           appVersion: appVersion,
         })
 
