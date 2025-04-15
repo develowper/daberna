@@ -78,7 +78,7 @@ export default class Telegram {
           msg += `👤 نام\n${us?.fullName ?? us?.username ?? '-'}\n`
           msg += `📱 شماره تماس\n${us?.phone ?? '-'}\n`
           msg += `⭐ نوع\n${data.title ?? '-'}\n`
-          msg += `📱 درگاه\n${data.gatewayId ?? '-'}\n`
+          msg += `📱${data.gatewayId ?? '-'}\n`
           msg += `📊 مقدار\n${data.amount ?? '-'}\n`
           break
 
