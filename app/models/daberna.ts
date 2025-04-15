@@ -519,7 +519,9 @@ export default class Daberna extends BaseModel {
       commissionPrice,
       DateTime.now().startOf('day').toJSDate()
     )
-
+    if (jokerInGame && jokerId != 1) {
+      await Setting.query().where('key', 'joker_id').update({ value: 1 })
+    }
     //***end **add log
     room.playerCount = 0
     room.cardCount = 0
