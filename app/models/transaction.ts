@@ -101,8 +101,9 @@ export default class Transaction extends BaseModel {
     try {
       switch (bank) {
         case 'zarinpal':
+          const gateway = await Transaction.getAPI('ZARINPAL')
           const zarinpalData = {
-            merchant_id: (await Transaction.getAPI('ZARINPAL')) ?? Env.get('ZARINPAL_TOKEN'),
+            merchant_id: gateway?.key ?? Env.get('ZARINPAL_TOKEN'),
             amount: `${price}0`,
             callback_url: `https://${Env.get('APP_URL')}/api/payment/done`,
             description: description,
@@ -129,6 +130,7 @@ export default class Transaction extends BaseModel {
               return {
                 status: 'success',
                 order_id: result.data.authority,
+                gateway_id: gateway?.title,
                 url: `https://www.zarinpal.com/pg/StartPay/${result.data.authority}`,
               }
             } else if (result.errors) {
@@ -245,11 +247,11 @@ export default class Transaction extends BaseModel {
         case 'zarinpal':
           let result: any = {}
           if (request && request.input('Status') === 'OK') {
+            const t = await Transaction.query().where('pay_id', request.input('Authority')).first()
             const data = {
-              merchant_id: (await Transaction.getAPI('ZARINPAL')) ?? Env.get('ZARINPAL_TOKEN'),
-              amount:
-                ((await Transaction.query().where('pay_id', request.input('Authority')).first())
-                  ?.amount ?? 0) * 10,
+              merchant_id:
+                (await Transaction.getAPI('ZARINPAL', t?.info)) ?? Env.get('ZARINPAL_TOKEN'),
+              amount: (t?.amount ?? 0) * 10,
               authority: request.input('Authority'),
             }
 
@@ -345,10 +347,20 @@ export default class Transaction extends BaseModel {
     }
   }
 
-  static async getAPI(key) {
-    return collect(JSON.parse((await Setting.findBy({ key: 'gateways' }))?.value ?? '[]'))
+  static async getAPI(key, confirm = null) {
+    //confirm
+    if (confirm) {
+      return collect(JSON.parse((await Setting.findBy({ key: 'gateways' }))?.value ?? '[]'))
+        .where('key', key)
+        .where('title', confirm)
+        .random()?.value
+    }
+
+    //pay
+    const res = collect(JSON.parse((await Setting.findBy({ key: 'gateways' }))?.value ?? '[]'))
       .where('key', key)
       .where('active', 1)
-      .random()?.value
+      .random()
+    return { key: res?.value, title: res?.title }
   }
 }
