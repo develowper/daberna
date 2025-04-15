@@ -102,6 +102,8 @@ export default class Transaction extends BaseModel {
       switch (bank) {
         case 'zarinpal':
           const gateway = await Transaction.getAPI('ZARINPAL')
+          console.log(gateway)
+          console.log(gateway?.key)
           const zarinpalData = {
             merchant_id: gateway?.key /*?? Env.get('ZARINPAL_TOKEN')*/,
             amount: `${price}0`,
