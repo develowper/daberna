@@ -358,7 +358,7 @@ export default class Transaction extends BaseModel {
       return collect(JSON.parse((await Setting.findBy({ key: 'gateways' }))?.value ?? '[]'))
         .where('key', key)
         .where('title', confirm)
-        .random()?.value
+        .first()?.value
     }
 
     //pay
