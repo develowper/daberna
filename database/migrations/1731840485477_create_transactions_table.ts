@@ -15,6 +15,7 @@ export default class extends BaseSchema {
       table.enum('to_type', Helper.TRANSACTION.fromTypes)
       table.bigInteger('to_id').unsigned()
       table.enum('gateway', Helper.TRANSACTION.gateways)
+      table.string('gateway_id', 50).nullable()
       table.bigInteger('amount')
       table.json('info').nullable()
       table.timestamp('payed_at').nullable()
