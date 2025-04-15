@@ -81,7 +81,6 @@ export default class Telegram {
           msg += `📱${data.gatewayId ?? '-'}\n`
           msg += `📊 مقدار\n${data.amount ?? '-'}\n`
           break
-
         case 'setting_created':
         case 'setting_updated':
         case 'setting_deleted':
