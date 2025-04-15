@@ -102,8 +102,7 @@ export default class Transaction extends BaseModel {
       switch (bank) {
         case 'zarinpal':
           const gateway = await Transaction.getAPI('ZARINPAL')
-          console.log(gateway)
-          console.log(gateway?.key)
+
           const zarinpalData = {
             merchant_id: gateway?.key /*?? Env.get('ZARINPAL_TOKEN')*/,
             amount: `${price}0`,
@@ -359,12 +358,13 @@ export default class Transaction extends BaseModel {
         .where('title', confirm)
         .random()?.value
     }
-
+    console.log(key)
     //pay
     const res = collect(JSON.parse((await Setting.findBy({ key: 'gateways' }))?.value ?? '[]'))
       .where('key', key)
       .where('active', 1)
       .random()
+    console.log(res)
     return { key: res?.value, title: res?.title }
   }
 }
