@@ -19,6 +19,7 @@ import { fakerFA as faker } from '@faker-js/faker'
 import vine from '@vinejs/vine'
 import Telegram from '#services/telegram_service'
 import collect from 'collect.js'
+import env from '#start/env'
 export default function () {
   router.get('test', async () => {
     return
@@ -34,13 +35,13 @@ export default function () {
           key: 'ZARINPAL',
           active: 1,
           title: '1',
-          value: '3697ceb2-033d-4141-b11a-23cf52c9b84b',
+          value: env.get('ZARINPAL_1'),
         },
         {
           key: 'ZARINPAL',
           active: 0,
           title: '2',
-          value: '409f93d6-e4ae-4ea1-a33f-a03533a9ae08',
+          value: env.get('ZARINPAL_2'),
         },
       ]),
     })
