@@ -230,7 +230,7 @@ export default class RoomController {
       if (beforeIpExists) {
         await trx.rollback()
         return response.status(400).json({
-          message: i18n.t('messages.validate.duplicate_*', { item: 'ip' }),
+          message: i18n.t('messages.duplicate_ip'),
         })
       }
 

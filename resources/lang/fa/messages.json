@@ -117,6 +117,7 @@
   "validate.max_cards": "حداکثر کارت مجاز {value} عدد است",
   "validate.max_room_cards": "حداکثر کارت مجاز اتاق {value} عدد است",
   "validate.duplicate_*": "{item} تکراری است",
+  "validate.duplicate_ip": "نمی توانید از یک مکان با دو حساب کاربری بازی کنید",
   "first_login_or_register": "ابتدا وارد شوید یا ثبت نام کنید",
   "not_found_*": "{item} یافت نشد",
   "is_full*": "{item} پر است",
