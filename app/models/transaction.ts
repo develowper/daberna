@@ -53,7 +53,8 @@ export default class Transaction extends BaseModel {
     amount,
     agencyId,
     gateway: string | null = null,
-    title: string | null = null
+    title: string | null = null,
+    info: any = null
   ): Promise<Transaction> {
     // const i18n = i18nManager.locale(env.get('LOCALE', ''))
     //
@@ -85,6 +86,7 @@ export default class Transaction extends BaseModel {
       payId: `${Date.now()}`,
       payedAt: DateTime.now(),
       title: t,
+      info: info,
     })
   }
 
