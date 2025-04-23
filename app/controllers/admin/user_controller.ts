@@ -83,7 +83,10 @@ export default class UserController {
     //   query.where({ fromId: userId, fromType: 'user' }).orWhere({ toId: userId, toType: 'user' })
     // })
 
-    if (search) query.where('full_name', 'like', `%${search}%`)
+    if (search)
+      query.where((query) => {
+        query.where('username', 'like', `%${search}%`).orWhere('id', 'like', `%${search}%`)
+      })
     if (type) {
       query.where('type', type)
     }
