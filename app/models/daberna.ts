@@ -378,6 +378,13 @@ export default class Daberna extends BaseModel {
     if (realTotalMoney > 0) {
       await game.save()
       room.clearCount++
+      const options: any = {
+        timeZone: 'Asia/Tehran',
+        calendar: 'persian',
+        numberingSystem: 'arab',
+        dateStyle: 'full',
+        timeStyle: 'short',
+      }
       const time = Intl.DateTimeFormat('fa-IR', options).format(
         DateTime.now().setZone('Asia/Tehran').toJSDate()
       )
