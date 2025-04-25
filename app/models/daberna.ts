@@ -388,7 +388,7 @@ export default class Daberna extends BaseModel {
       const time = Intl.DateTimeFormat('fa-IR', options).format(
         DateTime.now().setZone('Asia/Tehran').toJSDate()
       )
-      logText += `\uD89C\n${time}\n`
+      logText += `${time}\n`
       logText += `🔔بازی ${game.id} ${game.type}` + '\n'
       logText += `🔁 تعداد تلاش: ${tryCount}` + '\n'
       logText += `🎴 تعداد کارت: ${game.cardCount}` + '\n'
@@ -412,6 +412,7 @@ export default class Daberna extends BaseModel {
             return `کارت ${i.card_number}` + '🔹' + `${i.username}` + '🔹' + asPrice(winnerPrize)
           })
           .join('\n')}` + '\n'
+      logText += '🅿️🅰️🆁🅸🆂' + '\n'
       // Telegram.sendMessage(Helper.TELEGRAM_LOGS[0], logText)
       // Telegram.sendMessage(Helper.TELEGRAM_LOGS[1], logText)
 
