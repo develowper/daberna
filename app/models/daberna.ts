@@ -378,6 +378,10 @@ export default class Daberna extends BaseModel {
     if (realTotalMoney > 0) {
       await game.save()
       room.clearCount++
+      const time = Intl.DateTimeFormat('fa-IR', options).format(
+        DateTime.now().setZone('Asia/Tehran').toJSDate()
+      )
+      logText += `\uD89C\n${time}\n`
       logText += `🔔بازی ${game.id} ${game.type}` + '\n'
       logText += `🔁 تعداد تلاش: ${tryCount}` + '\n'
       logText += `🎴 تعداد کارت: ${game.cardCount}` + '\n'
