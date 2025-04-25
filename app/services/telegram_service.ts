@@ -235,21 +235,21 @@ export default class Telegram {
     //   const log = Helper.TELEGRAM_LOGS[i]
     //   res = await this.sendMessage(`${log}`, msg, mode, null, null, false, topic)
     // }
-    const count = await Queue.query().count('* as total')
-    if (Number(count[0].$extras.total) >= Helper.MAX_QUEUE_LEN) {
-      msg =
-        collect(await Queue.query())
-          .where('type', 'tg')
-          .map((i) => i.data)
-          .join('\n______________\n') ?? ''
-      await Queue.query().where('type', 'tg').delete()
-    } else {
-      await Queue.create({
-        type: 'tg',
-        data: msg,
-      })
-      msg = null
-    }
+    // const count = await Queue.query().count('* as total')
+    // if (Number(count[0].$extras.total) >= Helper.MAX_QUEUE_LEN) {
+    //   msg =
+    //     collect(await Queue.query())
+    //       .where('type', 'tg')
+    //       .map((i) => i.data)
+    //       .join('\n______________\n') ?? ''
+    //   await Queue.query().where('type', 'tg').delete()
+    // } else {
+    //   await Queue.create({
+    //     type: 'tg',
+    //     data: msg,
+    //   })
+    //   msg = null
+    // }
     if (msg)
       res = await this.sendMessage(Helper.TELEGRAM_LOGS[2], msg, mode, null, null, false, topic)
     return res
