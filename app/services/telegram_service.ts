@@ -5,6 +5,8 @@ import Admin from '../models/admin.js'
 import Helper from '#services/helper_service'
 import { HttpContext } from '@adonisjs/core/http'
 import TelegramEvent from '#events/telegram_event'
+import Queue from '#models/queue'
+import collect from 'collect.js'
 
 export default class Telegram {
   ///
@@ -31,13 +33,16 @@ export default class Telegram {
         us = await User.firstOrNew({})
       }
       const options: any = {
+        timeZone: 'Asia/Tehran',
         calendar: 'persian',
         numberingSystem: 'arab',
         dateStyle: 'full',
         timeStyle: 'short',
       }
 
-      const time = Intl.DateTimeFormat('fa-IR', options).format(DateTime.now().toJSDate())
+      const time = Intl.DateTimeFormat('fa-IR', options).format(
+        DateTime.now().setZone('Asia/Tehran').toJSDate()
+      )
       // const now = DateTime.now().setZone('Asia/Tehran')
       // const time = now.toFormat('EEEE, dd MMMM yyyy ⏰ HH:mm')
       let msg = `\uD89C${process.env.APP_NAME}\n${time}\n`
@@ -230,7 +235,23 @@ export default class Telegram {
     //   const log = Helper.TELEGRAM_LOGS[i]
     //   res = await this.sendMessage(`${log}`, msg, mode, null, null, false, topic)
     // }
-    res = await this.sendMessage(Helper.TELEGRAM_LOGS[2], msg, mode, null, null, false, topic)
+    const count = await Queue.query().count('* as total')
+    if (Number(count[0].$extras.total) >= Helper.MAX_QUEUE_LEN) {
+      msg =
+        collect(await Queue.query())
+          .where('type', 'tg')
+          .map((i) => i.data)
+          .join('\n______________\n') ?? ''
+      await Queue.query().where('type', 'tg').delete()
+    } else {
+      await Queue.create({
+        type: 'tg',
+        data: msg,
+      })
+      msg = null
+    }
+    if (msg)
+      res = await this.sendMessage(Helper.TELEGRAM_LOGS[2], msg, mode, null, null, false, topic)
     return res
   }
   public static markdownV2(text: any) {

@@ -244,6 +244,7 @@ class Helper {
   public static TOP_USERS_COUNT = 3
   public static PLAY_COUNT_FOR_ACTIVE_WINWHEEL = 5
   public static USER_ROLES = ['us', 'bo']
+  public static MAX_QUEUE_LEN = 5
   public static TELEGRAM_LOGS = [72534783, 967072802, -1002584416455 /*, 6270272894*/]
   public static TELEGRAM_TOPICS = {
     DABERNA_GAME: 7,
