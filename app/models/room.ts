@@ -190,6 +190,7 @@ export default class Room extends BaseModel {
         .where('is_active', true)
         .where('role', 'bo')
         .orderByRaw('RAND()')
+        .forUpdate()
         .first())
 
     if (!botUser /*|| beforeIds.includes(user?.id)*/) return
@@ -197,7 +198,7 @@ export default class Room extends BaseModel {
     if (room.maxCardsCount - room.cardCount <= 0) return
     if (room.maxCardsCount - room.cardCount <= 3)
       cardCount = userCardCount ?? room.maxCardsCount - room.cardCount
-    if (room.setUserCardsCount(cardCount, botUser, null)) {
+    if (room.setUserCardsCount(cardCount, botUser, null, null)) {
       room.playerCount++
       botUser.playCount++
       room.cardCount += cardCount
