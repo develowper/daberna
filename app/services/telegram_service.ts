@@ -250,9 +250,10 @@ export default class Telegram {
     //   })
     //   msg = null
     // }
-    if (msg)
-      res = await this.sendMessage(Helper.TELEGRAM_LOGS[2], msg, mode, null, null, false, topic)
-    return res
+    // if (msg)
+    //   res = await
+    this.sendMessage(Helper.TELEGRAM_LOGS[2], msg, mode, null, null, false, topic)
+    // return res
   }
   public static markdownV2(text: any) {
     const specialChars = ['.', '=', '_', '~', '||']
