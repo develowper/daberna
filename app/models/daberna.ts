@@ -381,7 +381,7 @@ export default class Daberna extends BaseModel {
       const options: any = {
         timeZone: 'Asia/Tehran',
         calendar: 'persian',
-        numberingSystem: 'arab',
+        // numberingSystem: 'arab',
         dateStyle: 'full',
         timeStyle: 'short',
       }
