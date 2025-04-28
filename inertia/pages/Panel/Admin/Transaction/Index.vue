@@ -449,8 +449,13 @@
                 <td class="px-2 py-4">
                   <div>{{ `${__(d.toType) || ''}(${d.toId})` }}</div>
                 </td>
-                <td class="px-2 py-4 font-bold" :class="{ 'text-danger-600': d.amount < 0 }">
-                  <div>{{ asPrice(d.amount) }}</div>
+                <td class="px-2 py-4 font-bold">
+                  <div :class="{ 'text-danger-600': d.amount < 0 }">{{ asPrice(d.amount) }}</div>
+                  <div class="text-xs">
+                    {{
+                      `${asPrice(JSON.parse(d.info)?.before_balance)}>${asPrice(JSON.parse(d.info)?.after_balance)}`
+                    }}
+                  </div>
                 </td>
                 <td class="px-2 py-4" :title="d.pay_id">
                   <div>{{ d.payId }}</div>
