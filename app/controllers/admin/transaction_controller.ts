@@ -412,18 +412,25 @@ export default class TransactionController {
       const column = `${transaction.toType}Id`
 
       if (status === 'success') {
+        let beforeBalance = 0
+        let afterBalance = 0
+
         if (transaction.type === 'charge') {
           const financial = await Helper.FINANCIAL_MODELS[transaction.toType].firstOrNew(
             { column: transaction.toId },
             { column: transaction.toId }
           )
+          beforeBalance = financial?.balance ?? 0
+
           financial.merge({
             balance: (financial.balance ?? 0) + transaction.amount,
           })
           await financial.save()
+          afterBalance = financial?.balance ?? 0
         }
         transaction?.merge({
           payedAt: now,
+          info: JSON.stringify({ before_balance: beforeBalance, after_balance: afterBalance }),
         })
         await transaction.save()
       }
