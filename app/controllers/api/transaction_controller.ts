@@ -406,8 +406,8 @@ export default class TransactionsController {
 
         if (transaction.type === 'charge') {
           const financial = await Helper.FINANCIAL_MODELS[transaction.toType].firstOrNew(
-            { column: transaction.toId },
-            { column: transaction.toId }
+            { [column]: transaction.toId },
+            { [column]: transaction.toId }
           )
           beforeBalance = financial?.balance ?? 0
 
