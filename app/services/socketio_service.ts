@@ -60,7 +60,7 @@ export default class SocketIo {
     SocketIo.wsIo.on('connection', async (socket) => {
       this.socket = socket
 
-      console.log(`*****  ws server service connected ${socket.id}`)
+      // console.log(`*****  ws server service connected ${socket.id}`)
       const token = socket.handshake.auth.token ?? socket.handshake.headers.token
       const roomType =
         socket.handshake.headers['request-room'] ?? socket.handshake.query['request-room']
