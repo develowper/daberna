@@ -151,6 +151,11 @@ export default class UserController {
             })
           )
         )
+        const beforeBalance = data.financial?.balance ?? 0
+        if (cmnd == 'withdraw') data.financial.balance -= amount
+        else data.financial.balance += amount
+        await data.financial.save()
+        const afterBalance = data.financial?.balance ?? 0
         const t = await Transaction.create({
           agencyId: data?.agencyId,
           title: desc,
@@ -164,10 +169,11 @@ export default class UserController {
           payId: now.toMillis(),
           payedAt: now,
           appVersion: null,
+          info: JSON.stringify({
+            before_balance: beforeBalance,
+            after_balance: afterBalance,
+          }),
         })
-        if (cmnd == 'withdraw') data.financial.balance -= amount
-        else data.financial.balance += amount
-        data.financial.save()
         Telegram.log(null, 'transaction_created', t)
 
         return response.send({
