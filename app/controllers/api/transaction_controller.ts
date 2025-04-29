@@ -423,7 +423,6 @@ export default class TransactionsController {
         })
         await transaction.save()
       }
-
       return inertia.render('Invoice', {
         lang: {
           title: paymentResponse.status === 'success' ? __('payment_success') : __('payment_fail'),
