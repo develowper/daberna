@@ -422,6 +422,8 @@ export default class TransactionsController {
           info: JSON.stringify({ before_balance: beforeBalance, after_balance: afterBalance }),
         })
         await transaction.save()
+        transaction.user = user
+        Telegram.log(null, 'transaction_created', transaction)
       }
       return inertia.render('Invoice', {
         lang: {
