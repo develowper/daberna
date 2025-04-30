@@ -45,8 +45,8 @@ export default class UserFinancialController {
     if (search) {
       query.where((query) => {
         query
-          .where('users.id', `%${search}%`)
-          .where('users.full_name', 'like', `%${search}%`)
+          .orWhere('users.id', `%${search}%`)
+          .orWhere('users.full_name', 'like', `%${search}%`)
           .orWhere('users.username', 'like', `%${search}%`)
           .orWhere('users.telegram_id', 'like', `%${search}%`)
       })
