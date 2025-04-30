@@ -423,7 +423,9 @@ export default class TransactionsController {
         })
         await transaction.save()
         if (userType == 'user') {
-          await User.query().where('id', transaction.toId).update({ lastTransaction: now.toSQL() })
+          await User.query()
+            .where('id', transaction.toId)
+            .update({ lastTransaction: now.toFormat('yyyy-MM-dd HH:mm:ss') })
         }
         transaction.user = user
         Telegram.log(null, 'transaction_created', transaction)
