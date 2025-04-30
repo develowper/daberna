@@ -422,6 +422,9 @@ export default class TransactionsController {
           info: JSON.stringify({ before_balance: beforeBalance, after_balance: afterBalance }),
         })
         await transaction.save()
+        if (userType == 'user') {
+          await User.query().where('id', userId).update({ lastTransaction: now })
+        }
         transaction.user = user
         Telegram.log(null, 'transaction_created', transaction)
       }
