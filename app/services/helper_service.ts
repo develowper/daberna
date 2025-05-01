@@ -974,6 +974,9 @@ class Helper {
   static getRandomBetween(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min
   }
+  static isPG() {
+    return env.get('DB_CONNECTION') == 'pg'
+  }
 }
 
 // export default Helper
@@ -1004,5 +1007,6 @@ export const {
   sleep,
   decrypt,
   getRandomBetween,
+  isPG,
 } = Helper
 export default Helper

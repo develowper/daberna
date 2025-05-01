@@ -39,6 +39,7 @@ export default class extends BaseSchema {
       table.tinyint('agency_level').unsigned().defaultTo(0)
       table.string('ref_id', 15).index()
       table.datetime('last_win').nullable()
+      table.datetime('last_transaction').nullable()
       table.bigInteger('inviter_id').unsigned().index().nullable()
       table.text('storage').nullable()
       table.integer('ref_count').defaultTo(0)

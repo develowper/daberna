@@ -110,6 +110,7 @@
   "remove_*_?": "از حذف {item} اطمینان دارید؟",
   "sure_to_*_?": "از {item} اطمینان دارید؟",
   "validate.wallet_min": " موجودی ناکافی\nحداقل مقدار کیف پول {item} باشد",
+  "validate.wallet_now": "مقدار کیف پول {item} است",
   "validate.min": " حداقل مقدار {item} {value} است",
   "validate.max": " حداکثر مقدار {item} {value} است",
   "validate.min_count": " حداقل تعداد {item} {value}  است",
