@@ -2,7 +2,7 @@
 
 import type { HttpContext } from '@adonisjs/core/http'
 import UserFinancial from '#models/user_financial'
-import Helper from '#services/helper_service'
+import Helper, { isPG } from '#services/helper_service'
 import User from '#models/user'
 import db from '@adonisjs/lucid/services/db'
 
@@ -43,16 +43,24 @@ export default class UserFinancialController {
       'user_financials.card as card'
     )
     if (search) {
-      query.where((query) => {
-        query
-          .orWhere('users.id', `%${search}%`)
-          .orWhere('users.full_name', 'like', `%${search}%`)
-          .orWhere('users.username', 'like', `%${search}%`)
-          .orWhere('users.telegram_id', 'like', `%${search}%`)
-      })
+      if (isPG())
+        query.where((q) => {
+          q.orWhereRaw(`users.id::text ILIKE ?`, [`%${search}%`])
+          q.orWhereRaw(`users.full_name ILIKE ?`, [`%${search}%`])
+          q.orWhereRaw(`users.username ILIKE ?`, [`%${search}%`])
+          q.orWhereRaw(`users.telegram_id ILIKE ?`, [`%${search}%`])
+        })
+      else
+        query.where((q) => {
+          q.orWhere('users.id', `%${search}%`)
+            .orWhere('users.full_name', 'like', `%${search}%`)
+            .orWhere('users.username', 'like', `%${search}%`)
+            .orWhere('users.telegram_id', 'like', `%${search}%`)
+        })
     }
     if (userId) {
-      query.where('users.id', userId)
+      if (isPG()) query.where('users.id', Number(userId))
+      else query.where('users.id', userId)
     }
 
     return response.json(await query.orderBy(sort, dir).paginate(page, paginate))
