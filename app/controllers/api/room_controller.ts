@@ -204,7 +204,7 @@ export default class RoomController {
       if (!user.isActive || !room || Number.isNaN(cardCount)) {
         await trx.rollback()
         return response.status(422).json({
-          message: i18n.t('messages.validation_failed'),
+          message: i18n.t('messages.check_network_and_retry'),
         })
       }
 
@@ -265,6 +265,12 @@ export default class RoomController {
 
         await room.useTransaction(trx).save()
 
+        if (room.getUserCardCount() <= 0) {
+          await trx.rollback()
+          return response.status(422).json({
+            message: i18n.t('messages.check_network_and_retry'),
+          })
+        }
         userFinancials.balance -= totalPrice
         await userFinancials.useTransaction(trx).save()
 
