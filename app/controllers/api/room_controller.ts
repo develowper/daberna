@@ -268,7 +268,7 @@ export default class RoomController {
         if (room.getUserCardCount() <= 0) {
           await trx.rollback()
           return response.status(422).json({
-            message: i18n.t('messages.check_network_and_retry'),
+            message: i18n.t('messages.room_is_full'),
           })
         }
         userFinancials.balance -= totalPrice
