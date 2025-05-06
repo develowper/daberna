@@ -537,7 +537,7 @@ export default class Blackjack extends BaseModel {
         let tries = 0
         while ((dealerInfo.sum[1] ?? dealerInfo.sum[0] ?? 0) < 17) {
           popped = remindedCards.pop()
-          if (popped == null) popped = shuffle(Helper.BLACKJACK.cards).pop()
+          if (!popped) popped = shuffle(Helper.BLACKJACK.cards).pop()
           if (dealerInfo.cards[1] == 'back' || dealerInfo.cards[1] == null) {
             dealerInfo.cards[1] = popped
           } else {
@@ -572,7 +572,7 @@ export default class Blackjack extends BaseModel {
           state['used_cards'] = usedCards
           game.state = JSON.stringify(state)
           await game.save()
-          await sleep(1000)
+          await sleep(300)
           Blackjack.updateSocket(game)
         }
 

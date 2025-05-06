@@ -15,6 +15,7 @@ import { Agent } from 'node:http'
 import AgencyFinancial from '#models/agency_financial'
 import { DateTime } from 'luxon'
 import Log from '#models/log'
+import db from '@adonisjs/lucid/services/db'
 
 export default class BotController {
   public user: User | Admin | null
@@ -332,6 +333,7 @@ export default class BotController {
       } else if (text === 'ثبت نام✅') {
         //
         if (this.user) return
+        await db.rawQuery('LOCK TABLES users WRITE')
         this.user = new User()
         this.user.telegramId = fromId
 
@@ -351,6 +353,7 @@ export default class BotController {
         )
         msg = 'نام کاربری را وارد کنید:'
         await this.updateUserStorage('register-username')
+        await db.rawQuery('UNLOCK TABLES')
         res = await Telegram.sendMessage(
           fromId,
           msg,
@@ -545,7 +548,9 @@ export default class BotController {
     if (!this.user) return
 
     this.user.storage = data
-    await this.user?.save()
+    try {
+      await this.user?.save()
+    } catch (er) {}
   }
 
   private async validate(type: any, data: any): Promise<any> {
