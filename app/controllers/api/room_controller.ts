@@ -21,6 +21,7 @@ import i18nManager from '@adonisjs/i18n/services/main'
 import env from '#start/env'
 import { storage } from '../../../resources/js/storage.js'
 import db from '@adonisjs/lucid/services/db'
+import Telegram from '#services/telegram_service'
 
 @inject()
 export default class RoomController {
@@ -267,6 +268,10 @@ export default class RoomController {
 
         if (room.getUserCardCount() <= 0) {
           await trx.rollback()
+          Telegram.sendMessage(
+            Helper.TELEGRAM_LOGS[0],
+            `id:${user.id}\nusername:${user.username}\ncardCount:${cardCount}\ntotalPrice:${totalPrice}\nbalance:${userFinancials.balance}`
+          )
           return response.status(422).json({
             message: i18n.t('messages.room_is_full'),
           })
