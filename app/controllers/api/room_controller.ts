@@ -251,7 +251,7 @@ export default class RoomController {
         })
       }
 
-      if (room.setUserCardsCount(userBeforeCardCounts + cardCount, user, ip )) {
+      if (room.setUserCardsCount(userBeforeCardCounts + cardCount, user, ip)) {
         if (userBeforeCardCounts === 0) {
           room.playerCount++
           user.playCount++
