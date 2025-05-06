@@ -226,7 +226,7 @@ export default class SocketIo {
         }
         for (let room of await Room.query()
           .where('game', 'daberna')
-          .whereNull('starter_id')
+          // .whereNull('starter_id')
           .where('is_active', true)) {
           // console.log(`players ${room.playerCount}`, `time ${room.secondsRemaining}`)
           // console.log(__('transactions'))
