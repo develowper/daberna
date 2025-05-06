@@ -112,7 +112,7 @@ export default class SocketIo {
         if (room) await room.setUser(this.user, 'remove')
         // console.log('before add players:', room.playerCount)
         // socket.removeAllListeners()
-        console.log(`leave room ${data?.type} socket:`, socket.id)
+        // console.log(`leave room ${data?.type} socket:`, socket.id)
         // const room = await Room.query().where('type', data?.type).first()
         // console.log('before remove players:', room.playerCount)
         // await room.setUser(this.user, 'remove')
