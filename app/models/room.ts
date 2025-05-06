@@ -42,7 +42,7 @@ export default class Room extends BaseModel {
   declare players: any
 
   @column()
-  declare starterId: number
+  declare starterId: number | null
 
   @column()
   declare botPercent: number
