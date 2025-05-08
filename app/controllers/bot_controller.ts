@@ -334,25 +334,30 @@ export default class BotController {
         //
         if (this.user) return
         // await db.rawQuery('LOCK TABLES users WRITE')
-        this.user = new User()
-        this.user.telegramId = fromId
+        await db.transaction(async (trx) => {
+          this.user = new User()
+          this.user.useTransaction(trx)
 
-        this.user.username = `U${DateTime.now().toMillis()}` /* ?? username ?? firstName*/
-        this.user.password = await hash.make(username ?? firstName)
-        this.user.agencyId = 1
-        this.user.agencyLevel = 0
-        this.user.refId = await User.makeRefCode()
+          this.user.telegramId = fromId
 
-        this.user.related('financial').create({ balance: 0 })
-        res = await Telegram.sendMessage(
-          fromId,
-          'در صورتی که قبلا در اپلیکیشن ثبت نام کرده اید ثبت نام را لغو کرده و از داخل اپلیکیشن قسمت پروفایل، اتصال به تلگرام را بزنید. ',
-          null,
-          null,
-          null
-        )
+          this.user.username = `U${DateTime.now().toMillis()}` /* ?? username ?? firstName*/
+          this.user.password = await hash.make(username ?? firstName)
+          this.user.agencyId = 1
+          this.user.agencyLevel = 0
+          this.user.refId = await User.makeRefCode()
+
+          this.user.related('financial').create({ balance: 0 })
+          res = await Telegram.sendMessage(
+            fromId,
+            'در صورتی که قبلا در اپلیکیشن ثبت نام کرده اید ثبت نام را لغو کرده و از داخل اپلیکیشن قسمت پروفایل، اتصال به تلگرام را بزنید. ',
+            null,
+            null,
+            null
+          )
+          await this.updateUserStorage('register-username')
+        })
         msg = 'نام کاربری را وارد کنید:'
-        await this.updateUserStorage('register-username')
+
         // await db.rawQuery('UNLOCK TABLES')
         res = await Telegram.sendMessage(
           fromId,
