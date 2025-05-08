@@ -38,6 +38,7 @@ export default class DailyReport extends BaseCommand {
       numberingSystem: 'arab',
       dateStyle: 'full',
       timeStyle: 'short',
+      timeZone: 'Asia/Tehran',
     }
 
     const time = Intl.DateTimeFormat('fa-IR', options).format(DateTime.now().toJSDate())

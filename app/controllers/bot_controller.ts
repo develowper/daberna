@@ -333,7 +333,7 @@ export default class BotController {
       } else if (text === 'ثبت نام✅') {
         //
         if (this.user) return
-        await db.rawQuery('LOCK TABLES users WRITE')
+        // await db.rawQuery('LOCK TABLES users WRITE')
         this.user = new User()
         this.user.telegramId = fromId
 
@@ -353,7 +353,7 @@ export default class BotController {
         )
         msg = 'نام کاربری را وارد کنید:'
         await this.updateUserStorage('register-username')
-        await db.rawQuery('UNLOCK TABLES')
+        // await db.rawQuery('UNLOCK TABLES')
         res = await Telegram.sendMessage(
           fromId,
           msg,
