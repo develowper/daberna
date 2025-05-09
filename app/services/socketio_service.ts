@@ -261,6 +261,8 @@ export default class SocketIo {
                 .seconds ?? 0) < 0)
           ) {
             await redis.set(room.lockKey, '1')
+            await redis.del(room.type)
+
             const game = await Daberna.makeGame(room)
             await redis.del(room.lockKey)
             // SocketIo.wsIo?.to(`room-${room.type}`).emit('game-start', game)

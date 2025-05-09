@@ -149,7 +149,7 @@ export default class Room extends BaseModel {
       `${this.maxCardsCount}`
     )
 
-    console.log(result, this.type, userId)
+    console.log(result, this.type, userId, await redis.hlen(roomKey))
     return result === 'ADDED'
   }
   public async setUserCardsCount(count: number, us: User | null = null, ip: any) {
