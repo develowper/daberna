@@ -81,7 +81,7 @@ export default class RoomController {
   //   //   'win_percent',
   //   // ])
   //
-  //   const userBeforeCardCounts = room.getUserCardCount()
+  //   const userBeforeCardCounts =await room.getUserCardCount()
   //
   //   if (userBeforeCardCounts + cardCount > room.maxUserCardsCount) {
   //     // await trx.commit()
@@ -210,7 +210,7 @@ export default class RoomController {
         })
       }
 
-      const userBeforeCardCounts = room.getUserCardCount()
+      const userBeforeCardCounts = await room.getUserCardCount()
 
       if (userBeforeCardCounts + cardCount > room.maxUserCardsCount) {
         await trx.rollback()
@@ -267,7 +267,7 @@ export default class RoomController {
 
         await room.useTransaction(trx).save()
 
-        if (room.getUserCardCount() <= 0) {
+        if ((await room.getUserCardCount()) <= 0) {
           await trx.rollback()
           Telegram.sendMessage(
             Helper.TELEGRAM_LOGS[0],

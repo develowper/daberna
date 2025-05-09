@@ -260,10 +260,8 @@ export default class SocketIo {
               (startAt?.plus({ seconds: room.maxSeconds })?.diff(DateTime.now(), 'seconds')
                 .seconds ?? 0) < 0)
           ) {
-            await redis.set(room.lockKey, '1')
-            const game = await Daberna.makeGame(room)
-            await redis.del(room.type)
-            await redis.del(room.lockKey)
+            const game = await room.createGame()
+
             // SocketIo.wsIo?.to(`room-${room.type}`).emit('game-start', game)
             await this.emitToRoom(`room-${room.type}`, 'game-start', game)
             SocketIo.wsIo?.in(`room-${room.type}`).socketsLeave(`room-${room.type}`)

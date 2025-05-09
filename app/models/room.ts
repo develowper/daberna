@@ -112,8 +112,11 @@ export default class Room extends BaseModel {
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime
 
-  public getUserCardCount() {
+  public async getUserCardCount() {
     const user = this.auth?.user
+
+    // return JSON.parse((await redis.hget(this.type, user?.id)) || '{}').card_count ?? 0
+
     const result: any = collect(JSON.parse(this.players ?? '[]') ?? []).first(
       (item: any) => item.user_id == user?.id
     )
@@ -151,6 +154,13 @@ export default class Room extends BaseModel {
     if (result != 'ADDED') console.log(result, this.type, userId, await redis.hlen(roomKey))
     // return true
     return result === 'ADDED'
+  }
+  public async createGame() {
+    await redis.set(this.lockKey, '1')
+    const game = await Daberna.makeGame(this)
+    await redis.del(this.type)
+    await redis.del(this.lockKey)
+    return game
   }
   public async setUserCardsCount(count: number, us: User | null = null, ip: any) {
     const user = us ?? this.auth?.user
@@ -206,6 +216,7 @@ export default class Room extends BaseModel {
     this.$dirty.players = true
     return true
   }
+
   public async setUser(us: any = null, cmnd = 'add') {
     const user = us ?? this.auth?.user
     let res: any[] = []
