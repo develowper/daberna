@@ -148,8 +148,7 @@ export default class Room extends BaseModel {
       playerData,
       `${this.maxCardsCount}`
     )
-
-    console.log(result, this.type, userId, await redis.hlen(roomKey))
+    if (result != 'ADDED') console.log(result, this.type, userId, await redis.hlen(roomKey))
     // return true
     return result === 'ADDED'
   }
