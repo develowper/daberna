@@ -261,7 +261,6 @@ export default class SocketIo {
                 .seconds ?? 0) < 0)
           ) {
             await redis.set(room.lockKey, '1')
-
             const game = await Daberna.makeGame(room)
             await redis.del(room.type)
             await redis.del(room.lockKey)
