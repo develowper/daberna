@@ -22,6 +22,7 @@ import env from '#start/env'
 import { storage } from '../../../resources/js/storage.js'
 import db from '@adonisjs/lucid/services/db'
 import Telegram from '#services/telegram_service'
+import redis from '@adonisjs/redis/services/main'
 
 @inject()
 export default class RoomController {
@@ -252,7 +253,7 @@ export default class RoomController {
         })
       }
 
-      if (room.setUserCardsCount(userBeforeCardCounts + cardCount, user, ip)) {
+      if (await room.setUserCardsCount(userBeforeCardCounts + cardCount, user, ip)) {
         if (userBeforeCardCounts === 0) {
           room.playerCount++
           user.playCount++
@@ -318,7 +319,9 @@ export default class RoomController {
       }
 
       await trx.rollback()
-      return response.status(500).json({ message: 'Unexpected error occurred' })
+      return response.status(422).json({
+        message: i18n.t('messages.room_is_full'),
+      })
     } catch (error) {
       await trx.rollback()
       return response.status(500).json({ message: 'Transaction failed', error })
