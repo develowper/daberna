@@ -27,6 +27,7 @@ import Dooz from '#models/dooz'
 import db from '@adonisjs/lucid/services/db'
 import Blackjack from '#models/blackjack'
 import redis from '@adonisjs/redis/services/main'
+import Admin from '#models/admin'
 declare module 'socket.io' {
   interface Socket {
     context: HttpContext
@@ -77,7 +78,10 @@ export default class SocketIo {
       // else this.user = this.authenticateSessionUser({ socket })
 
       if (roomType) {
-        const res = await socket.join(`room-${roomType}`)
+        const res =
+          this.user instanceof Admin
+            ? await socket.join(`ad-room-${roomType}`)
+            : await socket.join(`room-${roomType}`)
 
         // const room = await Room.findBy('type', roomType)
         // if (room)
@@ -167,6 +171,7 @@ export default class SocketIo {
 
       emitter.on('room-update', (data: any) => {
         SocketIo.wsIo.to(`room-${data.type}`).volatile.emit(`room-update`, data)
+        SocketIo.wsIo.to(`ad-room-${data.type}`).volatile.emit(`room-update`, data)
         // logger.info(data)
       })
 
@@ -359,7 +364,7 @@ export default class SocketIo {
 
   clearTimer() {
     console.log('********timer stopped********')
-    clearInterval(SocketIo.timer)
+    clearInterval(SocketIo.timer1)
   }
 
   async getSessionUser(socket: Socket) {
@@ -376,7 +381,12 @@ export default class SocketIo {
     if (!session || !session.auth_admin_web) {
       return null
     }
-    const user = (await User.find(session.auth_admin_web)) ?? null
+    const user = session.auth_admin_web
+      ? await Admin.find(session.auth_admin_web)
+      : ((await User.find(session.auth_admin_web)) ?? null)
+    if (!user) {
+      socket.disconnect()
+    }
     if (!user) {
       socket.disconnect()
     }
