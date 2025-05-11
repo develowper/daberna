@@ -295,7 +295,7 @@ export default {
       // socket.on("hello", (arg) => {
       //     console.log(arg);
       // });
-      this.socket.on('room-update', (data) => {
+      this.socket.on('admin-room-update', (data) => {
         this.refresh(data)
       })
       this.socket.on('game-start', (data) => {

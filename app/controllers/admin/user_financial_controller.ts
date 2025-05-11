@@ -47,6 +47,7 @@ export default class UserFinancialController {
         query.where((q) => {
           q.orWhereRaw(`users.id::text ILIKE ?`, [`%${search}%`])
           q.orWhereRaw(`users.full_name ILIKE ?`, [`%${search}%`])
+          q.orWhereRaw(`users.phone ILIKE ?`, [`%${search}%`])
           q.orWhereRaw(`users.username ILIKE ?`, [`%${search}%`])
           q.orWhereRaw(`users.telegram_id ILIKE ?`, [`%${search}%`])
         })
@@ -54,6 +55,7 @@ export default class UserFinancialController {
         query.where((q) => {
           q.orWhere('users.id', `%${search}%`)
             .orWhere('users.full_name', 'like', `%${search}%`)
+            .orWhere('users.phone', 'like', `%${search}%`)
             .orWhere('users.username', 'like', `%${search}%`)
             .orWhere('users.telegram_id', 'like', `%${search}%`)
         })
