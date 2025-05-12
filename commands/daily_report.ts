@@ -64,7 +64,7 @@ export default class DailyReport extends BaseCommand {
       logs?.forEach((item: Log) => item.delete())
 
       const trans = await Transaction.query()
-        .where('type', 'charge')
+        // .where('type', 'charge')
         // .whereNull('payed_at')
         .where('created_at', '<', now.minus({ days: clearPeriodDay }).toJSDate())
       transLen = trans.length
