@@ -25,12 +25,15 @@ export default class SettingController {
         'withdraw_title',
         'telegram_bot',
         'blackjack_help',
+        'header_message',
       ])
     )
     const cards: { active: number; number: string; name: string }[] = JSON.parse(
       settings.first((item) => item.key === 'card_to_card')?.value ?? '[]'
     )
-
+    const headerMessages: any[] = JSON.parse(
+      settings.first((item) => item.key === 'header_message')?.value ?? '[]'
+    )
     const telegramBot = settings.first((item: any) => item && item.key == 'telegram_bot')?.value
     const supportTelegram = settings.first((item: any) => item && item.key == 'support_telegram')
     const supportEmail = settings.first((item: any) => item && item.key == 'support_email')
@@ -51,7 +54,8 @@ export default class SettingController {
           type: item.game,
         }
       }),
-      ad:Helper.AD,
+      header_messages: collect(headerMessages).whereIn('active', ['1', 1, true]),
+      ad: Helper.AD,
       blackjack_help: blackjackHelp,
       cards: Helper.BLACKJACK.cards,
       coins: Helper.BLACKJACK.coins,
