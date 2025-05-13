@@ -54,7 +54,7 @@ export default class SettingController {
           type: item.game,
         }
       }),
-      header_messages: collect(headerMessages).whereIn('active', ['1', 1, true]),
+      header_messages: collect(headerMessages).whereIn('active', ['1', 1, true]).pluck('text'),
       ad: Helper.AD,
       blackjack_help: blackjackHelp,
       cards: Helper.BLACKJACK.cards,
