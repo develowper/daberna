@@ -83,7 +83,7 @@ export default class DailyReport extends BaseCommand {
             .pluck('id')
             .toArray()
         )
-        .where('balance', '<', 5000)
+        .where('balance', '<', 0)
         .where('last_charge', '<', now.minus({ days: clearPeriodDay }).toJSDate())
       ufsLen = ufs.length
       ufs?.forEach((item: UserFinancial) => User.deleteAllInfo(item))
