@@ -555,8 +555,8 @@ export default class Daberna extends BaseModel {
     //now decrease card prices from user for safety
 
     let l = `gameId:${game.id}\n`
+    console.time('updateBalances') // Start timer
     for (const user of users.where('role', 'us')) {
-      console.time('updateBalances') // Start timer
       const financial = user.financial ?? (await user.related('financial').create({ balance: 0 }))
       const p: any = collect(players).where('user_id', user.id).first()
       // console.log('find', user.id)
@@ -568,9 +568,9 @@ export default class Daberna extends BaseModel {
       await financial.save()
       l += `userId:${user.id}(${user.username}) buy ${buy} [${from}-${to}] \n`
       await redis.srem('in', user.id)
-      console.timeEnd('updateBalances') // End timer and print duration
     }
-    console.log(users.where('role', 'us').count(), l)
+    console.timeEnd('updateBalances') // End timer and print duration
+    // console.log(users.where('role', 'us').count(), l)
     if (logText != '')
       Telegram.logAdmins(`${logText}\n ${l}`, null, null /*Helper.TELEGRAM_TOPICS.DABERNA_GAME*/)
     //*****
