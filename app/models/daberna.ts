@@ -554,9 +554,8 @@ export default class Daberna extends BaseModel {
     }
     //now decrease card prices from user for safety
 
-    let l
+    let l = `gameId:${game.id}\n`
     for (const user of users.where('role', 'us')) {
-      l = `gameId:${game.id}\n`
       console.time('updateBalances') // Start timer
       const financial = user.financial ?? (await user.related('financial').create({ balance: 0 }))
       const p: any = collect(players).where('user_id', user.id).first()
