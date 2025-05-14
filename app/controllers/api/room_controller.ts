@@ -197,6 +197,10 @@ export default class RoomController {
     const trx = await db.transaction()
 
     try {
+      if (![15, 50].includes(user.id))
+        return response.status(422).json({
+          message: i18n.t('messages.we_are_updating'),
+        })
       const room = await Room.query({ client: trx })
         .where('is_active', true)
         .where('type', roomType)

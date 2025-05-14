@@ -560,10 +560,12 @@ export default class Daberna extends BaseModel {
       const financial = user.financial ?? (await user.related('financial').create({ balance: 0 }))
       const p: any = collect(players).where('user_id', user.id).first()
       if (!p) continue
+      const from = financial.balance
       const buy = Number.parseInt(`${p.card_count ?? 0}`) * room.cardPrice ?? 0
       financial.balance -= buy
+      const to = financial.balance
       await financial.save()
-      l += `userId:${user.id} buy ${buy} \n`
+      l += `userId:${user.id} buy ${buy} [${from}-${to}] \n`
       await redis.srem('in', user.id)
       console.timeEnd('updateBalances') // End timer and print duration
     }
