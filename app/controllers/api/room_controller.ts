@@ -216,12 +216,12 @@ export default class RoomController {
         })
       }
 
-      if (await redis.sismember('in', user.id)) {
-        await trx.rollback()
-        return response.status(400).json({
-          message: i18n.t('messages.you_are_in_game_queue'),
-        })
-      }
+      // if (await redis.sismember('in', user.id)) {
+      //   await trx.rollback()
+      //   return response.status(400).json({
+      //     message: i18n.t('messages.you_are_in_game_queue'),
+      //   })
+      // }
 
       const userBeforeCardCounts = await room.getUserCardCount()
 
