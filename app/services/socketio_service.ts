@@ -266,14 +266,14 @@ export default class SocketIo {
                 .seconds ?? 0) < 0)
           ) {
             const game = await room.createGame()
-
+            if (!game) return
             // SocketIo.wsIo?.to(`room-${room.type}`).emit('game-start', game)
             await this.emitToRoom(`room-${room.type}`, 'game-start', game)
             SocketIo.wsIo?.in(`room-${room.type}`).socketsLeave(`room-${room.type}`)
           }
         }
         // clearInterval(SocketIo.timer)
-      }, 3000)
+      }, 2000)
 
       //timer dooz
       SocketIo.timer2 = setInterval(async () => {

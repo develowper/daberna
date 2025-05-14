@@ -210,6 +210,13 @@ export default class RoomController {
         })
       }
 
+      if (await redis.sismember('in', user.id)) {
+        await trx.rollback()
+        return response.status(400).json({
+          message: i18n.t('messages.you_are_in_game_queue'),
+        })
+      }
+
       const userBeforeCardCounts = await room.getUserCardCount()
 
       if (userBeforeCardCounts + cardCount > room.maxUserCardsCount) {
@@ -278,8 +285,8 @@ export default class RoomController {
           })
         }
         userFinancials.balance -= totalPrice
-        await userFinancials.useTransaction(trx).save()
-
+        // await userFinancials.useTransaction(trx).save()
+        await redis.sadd('in', user.id)
         switch (room.cardPrice) {
           case 5000:
             user.card5000Count += cardCount

@@ -125,15 +125,20 @@ export default class Room extends BaseModel {
   }
   public async redisResetRoom() {
     const roomKey = this.type
-    await redis.set(this.lockKey, '1', 'EX', 1)
+    await redis.set(this.lockKey, '1' /*, 'EX', 1*/)
     await redis.del(roomKey)
   }
+
   public async redisAddPlayer(userId, playerData) {
     const roomKey = this.type
-    const luaScript = `
-    if redis.call('EXISTS', KEYS[2]) == 1 then
+    const luaScript =
+      /*
+      `  if redis.call('EXISTS', KEYS[2]) == 1 then
       return "LOCKED"
     end
+
+    ` +*/
+      `
     local currentCount = redis.call('HLEN', KEYS[1])
     if currentCount < tonumber(ARGV[3]) then
       redis.call('HSET', KEYS[1], ARGV[1], ARGV[2])
@@ -156,6 +161,7 @@ export default class Room extends BaseModel {
     return result === 'ADDED'
   }
   public async createGame() {
+    if (await redis.exists(this.lockKey)) return null
     await redis.set(this.lockKey, '1')
     const game = await Daberna.makeGame(this)
     await redis.del(this.type)
@@ -169,6 +175,8 @@ export default class Room extends BaseModel {
     const parsed: any = JSON.parse(this.players) ?? []
     const beforeExists = collect(parsed).first((item: any) => item.user_id == user.id)
 
+    if (await redis.exists(this.lockKey)) return false
+    await redis.set(this.lockKey, '1')
     if (
       !(await this.redisAddPlayer(
         user.id,
@@ -182,6 +190,7 @@ export default class Room extends BaseModel {
       ))
     )
       return false
+
     // await redis.hset(
     //   `${this.type}`,
     //   user.id,
@@ -214,6 +223,8 @@ export default class Room extends BaseModel {
     }
     this.players = JSON.stringify(res)
     this.$dirty.players = true
+
+    await redis.del(this.lockKey)
     return true
   }
 

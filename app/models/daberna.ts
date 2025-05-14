@@ -10,6 +10,7 @@ import app from '@adonisjs/core/services/app'
 import Setting from '#models/setting'
 import Log from '#models/log'
 import Telegram from '#services/telegram_service'
+import redis from '@adonisjs/redis/services/main'
 
 export default class Daberna extends BaseModel {
   static table = 'daberna'
@@ -300,7 +301,7 @@ export default class Daberna extends BaseModel {
         .preload('financial')
         .whereIn(
           'id',
-          [...rowWinners, ...winners].map((item: any) => item.user_id)
+          [...players /* ...rowWinners, ...winners*/].map((item: any) => item.user_id)
         )
     )
 
@@ -520,7 +521,35 @@ export default class Daberna extends BaseModel {
         )
       }
     }
-    for (const user of inviterUsers) {
+    for (const user of users.where('role', 'us')) {
+      console.time('updateBalances') // Start timer
+      const financial = user.financial ?? (await user.related('financial').create({ balance: 0 }))
+      const p: any = collect(players).where('user_id', user.id).first()
+      if (!p) continue
+      financial.balance -= Number.parseInt(`${p.card_count ?? 0}`) * room.cardPrice
+      await financial.save()
+      await redis.srem('in', user.id)
+      console.timeEnd('updateBalances') // End timer and print duration
+    }
+
+    //*****add log
+
+    await Log.add(
+      room.type,
+      realCardCount,
+      game.id ? 1 : 0,
+      commissionPrice,
+      DateTime.now().startOf('day').toJSDate()
+    )
+
+    //***end **add log
+
+    if (jokerInGame && jokerId != 1) {
+      await Setting.query().where('key', 'joker_id').update({ value: 1 })
+    }
+    //now decrease card prices from user for safety
+
+    for (const user of users) {
       if (refCommissionPrice > 0) {
         const financial = user.financial
         financial.balance += refCommissionPrice
@@ -537,19 +566,7 @@ export default class Daberna extends BaseModel {
       }
     }
 
-    //*****add log
-
-    await Log.add(
-      room.type,
-      realCardCount,
-      game.id ? 1 : 0,
-      commissionPrice,
-      DateTime.now().startOf('day').toJSDate()
-    )
-    if (jokerInGame && jokerId != 1) {
-      await Setting.query().where('key', 'joker_id').update({ value: 1 })
-    }
-    //***end **add log
+    //*****
     room.playerCount = 0
     room.cardCount = 0
     room.players = null
