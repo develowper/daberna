@@ -566,7 +566,7 @@ export default class Daberna extends BaseModel {
       financial.balance -= buy
       const to = financial.balance
       await financial.save()
-      l += `userId:${user.id} buy ${buy} [${from}-${to}] \n`
+      l += `userId:${user.id}(${user.username}) buy ${buy} [${from}-${to}] \n`
       await redis.srem('in', user.id)
       console.timeEnd('updateBalances') // End timer and print duration
     }
