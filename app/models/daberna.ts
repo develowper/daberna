@@ -431,7 +431,7 @@ export default class Daberna extends BaseModel {
     // console.log(boards.map((item) => item.card))
     const af = await AgencyFinancial.find(1)
     af.balance += commissionPrice
-    af.save()
+    await af.save()
     if (commissionPrice != 0) {
       // console.log('commissionTransaction', commissionPrice)
       await Transaction.add(
@@ -464,7 +464,7 @@ export default class Daberna extends BaseModel {
       user.prize += rowWinnerPrize
       user.todayPrize += rowWinnerPrize
       user.lastWin = DateTime.now()
-      user.save()
+      await user.save()
       title = __(`*_from_*_to_*`, {
         item1: __(`row_win`),
         item2: `${__(`daberna`)}${room.cardPrice} (${game.id})`,
@@ -499,7 +499,7 @@ export default class Daberna extends BaseModel {
       user.score += room.winScore
       user.todayPrize += winnerPrize
       user.lastWin = DateTime.now()
-      user?.save()
+      await user?.save()
 
       title = __(`*_from_*_to_*`, {
         item1: __(`win`),
@@ -521,17 +521,22 @@ export default class Daberna extends BaseModel {
         )
       }
     }
-    for (const user of users.where('role', 'us')) {
-      console.time('updateBalances') // Start timer
-      const financial = user.financial ?? (await user.related('financial').create({ balance: 0 }))
-      const p: any = collect(players).where('user_id', user.id).first()
-      if (!p) continue
-      financial.balance -= Number.parseInt(`${p.card_count ?? 0}`) * room.cardPrice
-      await financial.save()
-      await redis.srem('in', user.id)
-      console.timeEnd('updateBalances') // End timer and print duration
+    for (const user of inviterUsers) {
+      if (refCommissionPrice > 0) {
+        const financial = user.financial
+        financial.balance += refCommissionPrice
+        await financial.save()
+        await Transaction.add(
+          'ref_commission',
+          'daberna',
+          game.id,
+          'user',
+          user.id,
+          refCommissionPrice,
+          user?.agencyId
+        )
+      }
     }
-
     //*****add log
 
     await Log.add(
@@ -548,22 +553,20 @@ export default class Daberna extends BaseModel {
       await Setting.query().where('key', 'joker_id').update({ value: 1 })
     }
     //now decrease card prices from user for safety
-
-    for (const user of users) {
-      if (refCommissionPrice > 0) {
-        const financial = user.financial
-        financial.balance += refCommissionPrice
-        financial.save()
-        await Transaction.add(
-          'ref_commission',
-          'daberna',
-          game.id,
-          'user',
-          user.id,
-          refCommissionPrice,
-          user?.agencyId
-        )
-      }
+    for (const user of users.where('role', 'us')) {
+      let l = `gameId:${game.id}\n`
+      console.time('updateBalances') // Start timer
+      const financial = user.financial ?? (await user.related('financial').create({ balance: 0 }))
+      const p: any = collect(players).where('user_id', user.id).first()
+      if (!p) continue
+      const buy = Number.parseInt(`${p.card_count ?? 0}`) * room.cardPrice ?? 0
+      financial.balance -= buy
+      await financial.save()
+      l += `userId:${user.id} buy ${buy} \n`
+      await redis.srem('in', user.id)
+      console.timeEnd('updateBalances') // End timer and print duration
+      if (realTotalMoney > 0)
+        Telegram.logAdmins(l, null, null /*Helper.TELEGRAM_TOPICS.DABERNA_GAME*/)
     }
 
     //*****
