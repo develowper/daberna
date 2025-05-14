@@ -102,7 +102,7 @@ export default class Daberna extends BaseModel {
       await room.save()
       return null
     }
-
+    console.time('makeGame')
     const info = Helper.DABERNA
     let numbers: number[] = shuffle(range(info.min, info.max))
     const numbersLen = numbers.length
@@ -574,7 +574,7 @@ export default class Daberna extends BaseModel {
     // room.starterId = null
     room.isActive = true
     await room.save()
-
+    console.timeEnd('makeGame')
     return game
   }
 
