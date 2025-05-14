@@ -553,15 +553,17 @@ export default class Daberna extends BaseModel {
       await Setting.query().where('key', 'joker_id').update({ value: 1 })
     }
     //now decrease card prices from user for safety
+
     let l
     for (const user of users.where('role', 'us')) {
       l = `gameId:${game.id}\n`
       console.time('updateBalances') // Start timer
       const financial = user.financial ?? (await user.related('financial').create({ balance: 0 }))
       const p: any = collect(players).where('user_id', user.id).first()
+      console.log('find', user.id)
       if (!p) continue
       const from = financial.balance
-      const buy = Number.parseInt(`${p.card_count ?? 0}`) * room.cardPrice ?? 0
+      const buy = Number.parseInt(`${p.card_count ?? 0}`) * room.cardPrice
       financial.balance -= buy
       const to = financial.balance
       await financial.save()
@@ -569,7 +571,7 @@ export default class Daberna extends BaseModel {
       await redis.srem('in', user.id)
       console.timeEnd('updateBalances') // End timer and print duration
     }
-
+    console.log(users.where('role', 'us').count(), l)
     if (logText != '')
       Telegram.logAdmins(`${logText}\n ${l}`, null, null /*Helper.TELEGRAM_TOPICS.DABERNA_GAME*/)
     //*****
