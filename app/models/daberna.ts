@@ -559,7 +559,7 @@ export default class Daberna extends BaseModel {
       console.time('updateBalances') // Start timer
       const financial = user.financial ?? (await user.related('financial').create({ balance: 0 }))
       const p: any = collect(players).where('user_id', user.id).first()
-      console.log('find', user.id)
+      // console.log('find', user.id)
       if (!p) continue
       const from = financial.balance
       const buy = Number.parseInt(`${p.card_count ?? 0}`) * room.cardPrice
