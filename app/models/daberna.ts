@@ -426,7 +426,7 @@ export default class Daberna extends BaseModel {
       // Telegram.sendMessage(Helper.TELEGRAM_LOGS[0], logText)
       // Telegram.sendMessage(Helper.TELEGRAM_LOGS[1], logText)
 
-      Telegram.logAdmins(logText, null, null /*Helper.TELEGRAM_TOPICS.DABERNA_GAME*/)
+      // Telegram.logAdmins(logText, null, null /*Helper.TELEGRAM_TOPICS.DABERNA_GAME*/)
     }
     // console.log(boards.map((item) => item.card))
     const af = await AgencyFinancial.find(1)
@@ -569,8 +569,11 @@ export default class Daberna extends BaseModel {
       await redis.srem('in', user.id)
       console.timeEnd('updateBalances') // End timer and print duration
     }
-    if (l) Telegram.logAdmins(l, null, null /*Helper.TELEGRAM_TOPICS.DABERNA_GAME*/)
+
+    if (logText != '')
+      Telegram.logAdmins(`${logText}\n ${l}`, null, null /*Helper.TELEGRAM_TOPICS.DABERNA_GAME*/)
     //*****
+
     room.playerCount = 0
     room.cardCount = 0
     room.players = null
