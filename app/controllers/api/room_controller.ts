@@ -315,13 +315,13 @@ export default class RoomController {
         await user.useTransaction(trx).save()
 
         await trx.commit()
-        const players = JSON.stringify((await redis.hgetall(room.type)) ?? [])
+        const p = JSON.stringify((await redis.hgetall(room.type)) ?? [])
         emitter.emit('room-update', {
           type: roomType,
           cmnd: 'card-added',
           game_id: room.clearCount,
           cards: room.cardCount,
-          players: room.players,
+          players: p /* room.players*/,
           start_with_me: room.startWithMe,
           seconds_remaining: room.playerCount > 1 ? room.secondsRemaining : room.maxSeconds,
           player_count: await redis.hlen(room.type) /* room.playerCount*/,
