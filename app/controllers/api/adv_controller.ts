@@ -5,7 +5,7 @@ import collect from 'collect.js'
 export default class UserController {
   async get({ response, request }) {
     const setting: any = await Setting.findBy('key', 'ads')
-    collect(JSON.parse(setting?.value ?? '[]'))
+    return collect(JSON.parse(setting?.value ?? '[]'))
       .whereIn('is_active', [1, '1'])
       .random()
 
