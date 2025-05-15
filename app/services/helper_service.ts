@@ -224,6 +224,7 @@ class Helper {
   public static SOCKET_LINK_CLIENT = `https://${env.get('APP_URL')}` /* ?? '127.0.0.1:3298' ?? ''*/
   public static ERROR_STATUS = 400
   public static MAINTENANCE = false
+  public static TESTERS = [15, 50]
   public static BANK = 'zarinpal'
   public static APP_DOWNLOAD_URL =
     'BQACAgQAAxkBAAIBc2dpi3RyNuYZ1PKaZO6L0Rh0gQyQAAIpFQACyetQUzf-QIGKBw6bNgQ'

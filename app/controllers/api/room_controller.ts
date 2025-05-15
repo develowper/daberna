@@ -197,7 +197,7 @@ export default class RoomController {
     const trx = await db.transaction()
 
     try {
-      if (Helper.MAINTENANCE && ![15, 50].includes(user.id)) {
+      if (Helper.MAINTENANCE && !Helper.TESTERS.includes(user.id)) {
         await trx.rollback()
         return response.status(422).json({
           message: i18n.t('messages.we_are_updating'),
@@ -321,10 +321,10 @@ export default class RoomController {
           cmnd: 'card-added',
           game_id: room.clearCount,
           cards: room.cardCount,
-          players: room.players,
+          players: await redis.hgetall(room.type) /* room.players*/,
           start_with_me: room.startWithMe,
           seconds_remaining: room.playerCount > 1 ? room.secondsRemaining : room.maxSeconds,
-          player_count: room.playerCount,
+          player_count: await redis.hlen(room.type) /* room.playerCount*/,
           card_count: room.cardCount,
         })
 
