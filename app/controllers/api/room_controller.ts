@@ -268,7 +268,7 @@ export default class RoomController {
 
       if (await room.setUserCardsCount(userBeforeCardCounts + cardCount, user, ip)) {
         if (userBeforeCardCounts === 0) {
-          room.playerCount++
+          room.playerCount = await redis.hlen(room.type)
           user.playCount++
         }
 
@@ -284,7 +284,7 @@ export default class RoomController {
           await trx.rollback()
           Telegram.sendMessage(
             Helper.TELEGRAM_LOGS[0],
-            `id:${user.id}\nusername:${user.username}\ncardCount:${cardCount}\ntotalPrice:${totalPrice}\nbalance:${userFinancials.balance}`
+            `messages.room_is_full\nid:${user.id}\nusername:${user.username}\ncardCount:${cardCount}\ntotalPrice:${totalPrice}\nbalance:${userFinancials.balance}`
           )
           return response.status(422).json({
             message: i18n.t('messages.room_is_full'),

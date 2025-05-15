@@ -131,6 +131,7 @@ export default class Room extends BaseModel {
 `
     const newCardCount = (await redis.eval(script, 1, this.type, user?.id)) ?? 0
     // return JSON.parse((await redis.hget(this.type, user?.id)) || '{}').card_count ?? 0
+    return newCardCount
 
     const result: any = collect(JSON.parse(this.players ?? '[]') ?? []).first(
       (item: any) => item.user_id == user?.id
