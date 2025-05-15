@@ -450,7 +450,7 @@ export default class Daberna extends BaseModel {
     console.timeEnd(`updateBalances${room.type}${c}`) // End timer and print duration
     // console.log(users.where('role', 'us').count(), l)
     if (logText != '')
-      Telegram.logAdmins(`${logText}\n ${l}`, null, null /*Helper.TELEGRAM_TOPICS.DABERNA_GAME*/)
+      Telegram.logAdmins(`${logText}\n ${l}`, null, null ?? Helper.TELEGRAM_TOPICS.DABERNA_GAME)
     //*****
 
     // console.log(boards.map((item) => item.card))

@@ -30,7 +30,8 @@ export default class DabernaController {
           q.orWhere('id', 'like', `%${search}%`).orWhere('type', 'like', `%${search}%`)
         )
     const res = await query.orderBy(sort, dir).paginate(page, paginate)
-
+    console.log(res)
+    console.log(res.all())
     const transformed = res.all().map((item) => {
       let i: { [key: string]: any } = {
         id: null,
@@ -53,6 +54,7 @@ export default class DabernaController {
       return i
     })
 
+    console.log(transformed)
     return response.json({ data: transformed, meta: res.getMeta() })
   }
 }

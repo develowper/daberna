@@ -75,7 +75,7 @@ export default class Telegram {
           break
 
         case 'transaction_created':
-          this.topic = null /*Helper.TELEGRAM_TOPICS.TRANSACTION*/
+          this.topic = null ?? Helper.TELEGRAM_TOPICS.TRANSACTION
 
           if (data.amount > 0) msg += '🟢🟢🟢🛒 یک تراکنش انجام شد\n'
           else msg += '🟠🟠🟠🛒 یک پلن خریداری شد\n'
