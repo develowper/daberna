@@ -318,7 +318,8 @@ export default class RoomController {
         const pAll = await redis.hgetall(room.type)
 
         const p = JSON.stringify(pAll ?? [])
-        consol.log(p)
+        console.log(p)
+        console.log(typeof p)
         emitter.emit('room-update', {
           type: roomType,
           cmnd: 'card-added',
