@@ -26,8 +26,10 @@ export default class SettingController {
         'telegram_bot',
         'blackjack_help',
         'header_message',
+        'ads',
       ])
     )
+    const ads: any = JSON.parse(settings.first((item) => item.key === 'ads')?.value ?? '[]')
     const cards: { active: number; number: string; name: string }[] = JSON.parse(
       settings.first((item) => item.key === 'card_to_card')?.value ?? '[]'
     )
@@ -58,7 +60,7 @@ export default class SettingController {
       game_types: collect(Helper.ROOMS).map((item) =>
         collect(item).only(['game', 'type', 'cardPrice']).all()
       ),
-      ad: Helper.AD,
+      ad: collect(ads).whereIn('is_active', [1, '1']).random() ?? [] ?? Helper.AD,
       blackjack_help: blackjackHelp,
       cards: Helper.BLACKJACK.cards,
       coins: Helper.BLACKJACK.coins,

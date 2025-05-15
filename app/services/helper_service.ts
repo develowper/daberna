@@ -720,6 +720,19 @@ class Helper {
           },
         ]),
       },
+      {
+        key: 'ads',
+        title: __('ads'),
+        value: JSON.stringify([
+          {
+            id: 1,
+            clicks: 0,
+            banner_link: null,
+            click_link: null,
+            is_active: 1,
+          },
+        ]),
+      },
       // {
       //   key: 'enamad',
       //   value: Helper.ENAMAD,
