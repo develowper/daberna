@@ -9,6 +9,7 @@ import Telegram from '#services/telegram_service'
 import hash from '@adonisjs/core/services/hash'
 import User from '#models/user'
 import Blackjack from '#models/blackjack'
+import redis from '@adonisjs/redis/services/main'
 
 export default class RoomController {
   //
@@ -96,7 +97,8 @@ export default class RoomController {
     switch (cmnd) {
       case 'status':
         data.isActive = isActive
-        data.save()
+        await redis.del(data.type)
+        await data.save()
         if (data.game == 'blackjack') {
           await Blackjack.query().where('type', data.type).update({ isActive: isActive })
         }
