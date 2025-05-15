@@ -102,7 +102,7 @@ export default class Daberna extends BaseModel {
       await room.save()
       return null
     }
-    console.time('makeGame')
+    // console.time('makeGame')
     const info = Helper.DABERNA
     let numbers: number[] = shuffle(range(info.min, info.max))
     const numbersLen = numbers.length
@@ -555,7 +555,8 @@ export default class Daberna extends BaseModel {
     //now decrease card prices from user for safety
 
     let l = `gameId:${game.id}\n`
-    console.time('updateBalances') // Start timer
+    const c = users.count()
+    console.time(`updateBalances${room.type}${c}`) // Start timer
     for (const user of users.where('role', 'us')) {
       const financial = user.financial ?? (await user.related('financial').create({ balance: 0 }))
       const p: any = collect(players).where('user_id', user.id).first()
@@ -569,7 +570,7 @@ export default class Daberna extends BaseModel {
       l += `userId:${user.id}(${user.username}) buy ${buy} [${from}-${to}] \n`
       await redis.srem('in', user.id)
     }
-    console.timeEnd('updateBalances') // End timer and print duration
+    console.timeEnd(`updateBalances${room.type}${c}`) // End timer and print duration
     // console.log(users.where('role', 'us').count(), l)
     if (logText != '')
       Telegram.logAdmins(`${logText}\n ${l}`, null, null /*Helper.TELEGRAM_TOPICS.DABERNA_GAME*/)
@@ -582,7 +583,7 @@ export default class Daberna extends BaseModel {
     // room.starterId = null
     room.isActive = true
     await room.save()
-    console.timeEnd('makeGame')
+    // console.timeEnd('makeGame')
     return game
   }
 
