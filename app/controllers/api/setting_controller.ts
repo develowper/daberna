@@ -55,6 +55,7 @@ export default class SettingController {
         }
       }),
       header_messages: collect(headerMessages).whereIn('active', ['1', 1, true]).pluck('text'),
+      game_types: collect(Helper.ROOMS).map((item) => collect(item).only(['game', 'type']).all()),
       ad: Helper.AD,
       blackjack_help: blackjackHelp,
       cards: Helper.BLACKJACK.cards,
