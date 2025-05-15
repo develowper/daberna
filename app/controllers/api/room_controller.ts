@@ -268,7 +268,7 @@ export default class RoomController {
 
       if (await room.setUserCardsCount(userBeforeCardCounts + cardCount, user, ip)) {
         if (userBeforeCardCounts === 0) {
-          room.playerCount = await redis.hlen(room.type)
+          room.playerCount = await redis.hlen(room.type) /*room.playerCount+1*/
           user.playCount++
         }
 
@@ -317,7 +317,7 @@ export default class RoomController {
         await trx.commit()
         const pAll = await redis.hgetall(room.type)
 
-        const p = JSON.stringify(Object.values(pAll) ?? [])
+        const p = JSON.stringify(Object.values(pAll).map((v) => JSON.parse(v)))
         // console.log(p)
         // console.log(typeof p)
         emitter.emit('room-update', {
