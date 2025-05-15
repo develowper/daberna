@@ -3,11 +3,12 @@ import { BaseModel, column, computed } from '@adonisjs/lucid/orm'
 import collect from 'collect.js'
 import { HttpContext } from '@adonisjs/core/http'
 import emitter from '@adonisjs/core/services/emitter'
-import { getSettings, range } from '#services/helper_service'
+import Helper, { getSettings, range } from '#services/helper_service'
 import User from '#models/user'
 import app from '@adonisjs/core/services/app'
 import Daberna from '#models/daberna'
 import redis from '@adonisjs/redis/services/main'
+import Telegram from '#services/telegram_service'
 
 // import { HttpContext } from '@adonisjs/http-server/build/standalone'
 // @inject()
@@ -175,12 +176,20 @@ export default class Room extends BaseModel {
     return result === 'ADDED'
   }
   public async createGame() {
-    if (await redis.exists(this.lockKey)) return null
-    await redis.set(this.lockKey, '1')
-    const game = await Daberna.makeGame(this)
-    await redis.del(this.type)
-    await redis.del(this.lockKey)
-    return game
+    // if (await redis.exists(this.lockKey)) return null
+    // await redis.set(this.lockKey, '1')
+    const lockAcquired = await redis.set(this.lockKey, '1', 'PX', 300, 'NX')
+    if (!lockAcquired) return null // Lock already exists, skip
+    let game = null
+    try {
+      game = await Daberna.makeGame(this)
+    } catch (e) {
+      await Telegram.logAdmins(String(e), null, Helper.TELEGRAM_TOPICS.bug)
+    } finally {
+      await redis.del(this.lockKey)
+      await redis.del(this.type)
+      return game
+    }
   }
   public async setUserCardsCount(count: number, us: User | null = null, ip: any) {
     const user = us ?? this.auth?.user
