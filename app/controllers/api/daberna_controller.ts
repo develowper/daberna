@@ -18,8 +18,13 @@ export default class DabernaController {
     let query = Daberna.query()
     const isPg = isPG()
     // console.log('page', page)
-    query.where('boards', 'like', `%id":${userId},%`)
-
+    query
+      .where(
+        'created_at',
+        '>',
+        DateTime.now().minus({ days: Helper.DABERNA_LOG_DAY_LIMIT }).toJSDate()
+      )
+      .where('boards', 'like', `%id":${userId},%`)
     if (type) query.where('type', `d${type}`)
 
     if (search)
