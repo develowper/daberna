@@ -6,6 +6,13 @@ import axios from 'axios'
 import collect from 'collect.js'
 import Setting from '#models/setting'
 export default class Transaction extends BaseModel {
+  @computed()
+  public get createdAtShamsi() {
+    if (!this.createdAt) return ''
+    const dt = this.createdAt.setLocale('fa-IR')
+    return dt.toLocaleString(DateTime.DATETIME_SHORT)
+  }
+
   @column({ isPrimary: true })
   declare id: number
   @column()
