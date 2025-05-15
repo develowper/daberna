@@ -376,6 +376,22 @@ export default class Transaction extends BaseModel {
       .whereIn('active', ['1', 1, true])
       .random()
 
+    console.log(collect(JSON.parse((await Setting.findBy({ key: 'gateways' }))?.value ?? '[]')))
+    console.log(
+      collect(
+        JSON.parse((await Setting.findBy({ key: 'gateways' }))?.value ?? '[]').where('key', key)
+      )
+    )
+    console.log(
+      collect(
+        JSON.parse((await Setting.findBy({ key: 'gateways' }))?.value ?? '[]').whereIn('active', [
+          '1',
+          1,
+          true,
+        ])
+      )
+    )
+    console.log(res)
     return { key: res?.value, title: res?.title }
   }
 }
