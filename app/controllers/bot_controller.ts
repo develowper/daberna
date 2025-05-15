@@ -509,9 +509,10 @@ export default class BotController {
       case 'support_links':
         const supports = JSON.parse((await Setting.findBy('key', 'support_links'))?.value ?? '[]')
         tmp = {
-          inline_keyboard: myMap(supports, (item: any) => [
-            { text: `📱 ${item.name} 📱`, url: item.url },
-          ]),
+          inline_keyboard: myMap(
+            supports.filter((i) => i.url != '' && i.url != null),
+            (item: any) => [{ text: `📱 ${item.name} 📱`, url: item.url }]
+          ),
           resize_keyboard: true,
         }
         break
