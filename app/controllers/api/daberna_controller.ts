@@ -5,7 +5,7 @@ import Daberna from '#models/daberna'
 import { DateTime } from 'luxon'
 
 export default class DabernaController {
-  async search({ request, response, auth }: HttpContext) {
+  async search({ request, response, auth, i18n }: HttpContext) {
     const user = auth.user
     const userId = user?.id
     const page = request.input('page') ?? 1
@@ -43,6 +43,7 @@ export default class DabernaController {
         card_count: 0,
       }
       i.id = item.id
+      i.title = i18n.t('messages.room_*', { item: item.type.slice(1) })
       i.type = item.type
       i.created_at = item.createdAt?.setLocale('fa-IR')?.toLocaleString(DateTime.DATETIME_SHORT)
       i.card_count = JSON.parse(item.boards).filter((u) => u.user_id == userId).length
@@ -55,7 +56,7 @@ export default class DabernaController {
       return i
     })
 
-    console.log(transformed)
+    // console.log(transformed)
     return response.json({ data: transformed, meta: res.getMeta() })
   }
 }
