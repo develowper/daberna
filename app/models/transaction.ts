@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column } from '@adonisjs/lucid/orm'
+import { BaseModel, column, computed } from '@adonisjs/lucid/orm'
 import Helper, { __ } from '#services/helper_service'
 import Env from '#start/env'
 import axios from 'axios'
