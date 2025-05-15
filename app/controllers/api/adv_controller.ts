@@ -4,6 +4,11 @@ import collect from 'collect.js'
 
 export default class UserController {
   async get({ response, request }) {
+    const setting: any = await Setting.findBy('key', 'ads')
+    collect(JSON.parse(setting?.value ?? '[]'))
+      .whereIn('is_active', [1, '1'])
+      .random()
+
     const cmnd = request.input('cmnd')
     const ad = await db.from('advs').where('is_active', true).orderByRaw('RAND()').limit(1)
     return response.json(ad?.[0])

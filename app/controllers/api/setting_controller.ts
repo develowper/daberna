@@ -60,7 +60,7 @@ export default class SettingController {
       game_types: collect(Helper.ROOMS).map((item) =>
         collect(item).only(['game', 'type', 'cardPrice']).all()
       ),
-      ad: collect(ads).whereIn('is_active', [1, '1']).random() ?? [] ?? Helper.AD,
+      ad: Helper.AD,
       blackjack_help: blackjackHelp,
       cards: Helper.BLACKJACK.cards,
       coins: Helper.BLACKJACK.coins,
