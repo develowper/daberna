@@ -568,7 +568,7 @@ export default class Daberna extends BaseModel {
       const to = financial.balance
       await financial.save()
       l += `userId:${user.id}(${user.username}) buy ${buy} [${from}-${to}] \n`
-      await redis.srem('in', user.id)
+      // await redis.srem('in', user.id)
     }
     console.timeEnd(`updateBalances${room.type}${c}`) // End timer and print duration
     // console.log(users.where('role', 'us').count(), l)

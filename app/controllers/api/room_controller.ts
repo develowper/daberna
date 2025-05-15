@@ -292,7 +292,7 @@ export default class RoomController {
         }
         userFinancials.balance -= totalPrice
         // await userFinancials.useTransaction(trx).save()
-        await redis.sadd('in', user.id)
+        // await redis.sadd('in', user.id)
         switch (room.cardPrice) {
           case 5000:
             user.card5000Count += cardCount
