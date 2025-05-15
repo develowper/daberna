@@ -428,6 +428,31 @@ export default class Daberna extends BaseModel {
 
       // Telegram.logAdmins(logText, null, null /*Helper.TELEGRAM_TOPICS.DABERNA_GAME*/)
     }
+
+    //now decrease card prices from user for safety
+
+    let l = `gameId:${game.id}\n`
+    const c = users.count()
+    console.time(`updateBalances${room.type}${c}`) // Start timer
+    for (const user of users.where('role', 'us')) {
+      const financial = user.financial ?? (await user.related('financial').create({ balance: 0 }))
+      const p: any = collect(players).where('user_id', user.id).first()
+      // console.log('find', user.id)
+      if (!p) continue
+      const from = financial.balance
+      const buy = Number.parseInt(`${p.card_count ?? 0}`) * room.cardPrice
+      financial.balance -= buy
+      const to = financial.balance
+      await financial.save()
+      l += `userId:${user.id}(${user.username}) buy ${buy} [${from}-${to}] \n`
+      // await redis.srem('in', user.id)
+    }
+    console.timeEnd(`updateBalances${room.type}${c}`) // End timer and print duration
+    // console.log(users.where('role', 'us').count(), l)
+    if (logText != '')
+      Telegram.logAdmins(`${logText}\n ${l}`, null, null /*Helper.TELEGRAM_TOPICS.DABERNA_GAME*/)
+    //*****
+
     // console.log(boards.map((item) => item.card))
     const af = await AgencyFinancial.find(1)
     af.balance += commissionPrice
@@ -552,29 +577,6 @@ export default class Daberna extends BaseModel {
     if (jokerInGame && jokerId != 1) {
       await Setting.query().where('key', 'joker_id').update({ value: 1 })
     }
-    //now decrease card prices from user for safety
-
-    let l = `gameId:${game.id}\n`
-    const c = users.count()
-    console.time(`updateBalances${room.type}${c}`) // Start timer
-    for (const user of users.where('role', 'us')) {
-      const financial = user.financial ?? (await user.related('financial').create({ balance: 0 }))
-      const p: any = collect(players).where('user_id', user.id).first()
-      // console.log('find', user.id)
-      if (!p) continue
-      const from = financial.balance
-      const buy = Number.parseInt(`${p.card_count ?? 0}`) * room.cardPrice
-      financial.balance -= buy
-      const to = financial.balance
-      await financial.save()
-      l += `userId:${user.id}(${user.username}) buy ${buy} [${from}-${to}] \n`
-      // await redis.srem('in', user.id)
-    }
-    console.timeEnd(`updateBalances${room.type}${c}`) // End timer and print duration
-    // console.log(users.where('role', 'us').count(), l)
-    if (logText != '')
-      Telegram.logAdmins(`${logText}\n ${l}`, null, null /*Helper.TELEGRAM_TOPICS.DABERNA_GAME*/)
-    //*****
 
     room.playerCount = 0
     room.cardCount = 0
