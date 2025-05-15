@@ -1,5 +1,5 @@
 // import type { HttpContext } from '@adonisjs/core/http'
-import Helper from '#services/helper_service'
+import Helper, {isPG} from '#services/helper_service'
 import { HttpContext } from '@adonisjs/core/http'
 import Daberna from '#models/daberna'
 
@@ -13,17 +13,26 @@ export default class DabernaController {
     let sort = request.input('order_by') ?? 'created_at'
     sort = ['row_win_prize', 'win_prize', 'card_count'].includes(sort) ? 'id' : sort
     let query = Daberna.query()
-
+    const isPg = isPG()
     if (userId) {
-      query.where('boards', 'like', `%id":${userId},%`)
+      if (isPg) query.whereRaw(`boards @> '[{"user_id": "${userId}"}]'`)
+      else query.where('boards', 'like', `%id":${userId},%`)
     }
     if (search)
-      query.where((q) =>
-        q
-          .orWhere('winners', 'like', `%ze":${search}%`)
-          .orWhere('row_winners', 'like', `%ze":${search}%`)
-          .orWhere('type', 'like', `ze":%${search}%`)
-      )
+      if (isPg)
+        query.where((q) =>
+          q
+            .orWhereRaw(`winners::text ILIKE ?`, [`%":"${search}%`])
+            .orWhereRaw(`row_winners::text ILIKE ?`, [`%":"${search}%`])
+            .orWhereRaw(`type ILIKE ?`, [`%${search}%`])
+        )
+      else
+        query.where((q) =>
+          q
+            .orWhere('winners', 'like', `%ze":${search}%`)
+            .orWhere('row_winners', 'like', `%ze":${search}%`)
+            .orWhere('type', 'like', `ze":%${search}%`)
+        )
     const res = await query.orderBy(sort, dir).paginate(page, paginate)
 
     const transformed = res.all().map((item) => {

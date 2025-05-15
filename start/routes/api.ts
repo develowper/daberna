@@ -10,6 +10,7 @@ const BotController = () => import('../../app/controllers/bot_controller.js')
 const DoozController = () => import('../../app/controllers/api/dooz_controller.js')
 const BlackJackController = () => import('../../app/controllers/api/blackjack_controller.js')
 const AdvController = () => import('../../app/controllers/api/adv_controller.js')
+const DabernaController = () => import('../../app/controllers/api/daberna_controller.js')
 
 export default () => {
   router.any('api/payment/done', [TransactionController, 'done']).as('api.payment.done')
@@ -38,6 +39,7 @@ export default () => {
       router.post('blackjack/play', [BlackJackController, 'play']).as('blackjack.play')
       router.get('adv/get', [AdvController, 'get']).as('adv.get')
       router.post('adv/click', [AdvController, 'click']).as('adv.click')
+      router.get('daberna/search', [DabernaController, 'search']).as('daberna.search')
     })
     // .use(middleware.checkServerStatus)
     .use(
