@@ -322,7 +322,7 @@ export default class RoomController {
           cmnd: 'card-added',
           game_id: room.clearCount,
           cards: room.cardCount,
-          players: p /* room.players*/,
+          players: pAll /* room.players*/,
           start_with_me: room.startWithMe,
           seconds_remaining: room.playerCount > 1 ? room.secondsRemaining : room.maxSeconds,
           player_count: await redis.hlen(room.type) /* room.playerCount*/,
