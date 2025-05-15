@@ -17,12 +17,10 @@ export default class UserController {
     const id = request.input('id')
 
     const ads = collect(JSON.parse((await Setting.findBy('key', 'ads'))?.value ?? '[]'))
-    console.log(ads)
     const updated = ads.map((item) => ({
       ...item,
       clicks: `${item.id}` === `${id}` ? item.clicks + 1 : item.clicks,
     }))
-    console.log(updated.all())
     await Setting.query()
       .where('key', 'ads')
       .update({ value: JSON.stringify(updated.all()) })
