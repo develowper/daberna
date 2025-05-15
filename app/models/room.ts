@@ -207,13 +207,14 @@ export default class Room extends BaseModel {
     if (
       !(await this.redisAddPlayer(
         user.id,
-        JSON.stringify({
-          user_id: user.id,
-          username: user.username,
-          user_role: user.role,
-          user_ip: ip,
-          card_count: count,
-        })
+        '1' ??
+          JSON.stringify({
+            user_id: user.id,
+            username: user.username,
+            user_role: user.role,
+            user_ip: ip,
+            card_count: count,
+          })
       ))
     ) {
       return false
