@@ -178,6 +178,7 @@ export default class Room extends BaseModel {
   public async createGame() {
     // if (await redis.exists(this.lockKey)) return null
     // await redis.set(this.lockKey, '1')
+    await redis.del(this.type)
     const lockAcquired = await redis.set(this.lockKey, '1', 'PX', 300, 'NX')
     if (!lockAcquired) return null // Lock already exists, skip
     let game = null
