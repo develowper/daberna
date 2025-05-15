@@ -316,7 +316,9 @@ export default class RoomController {
 
         await trx.commit()
         const pAll = await redis.hgetall(room.type)
+
         const p = JSON.stringify(pAll ?? [])
+        consol.log(p)
         emitter.emit('room-update', {
           type: roomType,
           cmnd: 'card-added',
