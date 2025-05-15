@@ -11,6 +11,7 @@ export default class DabernaController {
     const page = request.input('page') ?? 1
     const paginate = request.input('paginate') ?? Helper.PAGINATE
     const search = request.input('search')
+    const type = request.input('type')
     const dir = request.input('dir') ?? 'DESC'
     let sort = request.input('order_by') ?? 'created_at'
     sort = ['row_win_prize', 'win_prize', 'card_count'].includes(sort) ? 'id' : sort
@@ -18,6 +19,8 @@ export default class DabernaController {
     const isPg = isPG()
     // console.log('page', page)
     query.where('boards', 'like', `%id":${userId},%`)
+
+    if (type) query.where('type', `d${type}`)
 
     if (search)
       if (isPg)
