@@ -2,6 +2,7 @@
 import Helper, { isPG } from '#services/helper_service'
 import { HttpContext } from '@adonisjs/core/http'
 import Daberna from '#models/daberna'
+import { DateTime } from 'luxon'
 
 export default class DabernaController {
   async search({ request, response, auth }: HttpContext) {
@@ -30,8 +31,8 @@ export default class DabernaController {
           q.orWhere('id', 'like', `%${search}%`).orWhere('type', 'like', `%${search}%`)
         )
     const res = await query.orderBy(sort, dir).paginate(page, paginate)
-    console.log(res)
-    console.log(res.all())
+    // console.log(res)
+    // console.log(res.all())
     const transformed = res.all().map((item) => {
       let i: { [key: string]: any } = {
         id: null,
@@ -43,7 +44,7 @@ export default class DabernaController {
       }
       i.id = item.id
       i.type = item.type
-      i.created_at = item.createdAt
+      i.created_at = item.createdAt?.setLocale('fa-IR')?.toLocaleString(DateTime.DATETIME_SHORT)
       i.card_count = JSON.parse(item.boards).filter((u) => u.user_id == userId).length
       i.win_prize = JSON.parse(item.winners)
         .filter((u) => u.user_id == userId)
