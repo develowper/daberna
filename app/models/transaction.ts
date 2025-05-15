@@ -373,7 +373,7 @@ export default class Transaction extends BaseModel {
     //pay
     const res = collect(JSON.parse((await Setting.findBy({ key: 'gateways' }))?.value ?? '[]'))
       .where('key', key)
-      .where('active', '1')
+      .whereIn('active', ['1', 1, true])
       .random()
 
     return { key: res?.value, title: res?.title }
