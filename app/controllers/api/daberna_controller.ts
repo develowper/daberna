@@ -56,8 +56,8 @@ export default class DabernaController {
       return i
     })
 
-    console.log(res.getMeta())
-    console.log(transformed)
+    // console.log(res.getMeta())
+    // console.log(transformed)
     return response.json({ data: transformed, meta: res.getMeta() })
   }
 }
