@@ -107,6 +107,7 @@ export default class Room extends BaseModel {
 
   @computed()
   public get userCardCount() {
+    return this.getUserCardCount()
     return (
       collect(JSON.parse(this.players ?? '[]') ?? []).first(
         (item: any) => item.user_id == this.auth?.user
@@ -119,19 +120,19 @@ export default class Room extends BaseModel {
 
   public async getUserCardCount() {
     const user = this.auth?.user
-
-    const script = `
-  local data = redis.call("HGET", KEYS[1], ARGV[1])
-  if not data then
-    return 0
-  end
-
-  local obj = cjson.decode(data)
-  return obj.card_count or 0
-`
-    const newCardCount = (await redis.eval(script, 1, this.type, user?.id)) ?? 0
-    // return JSON.parse((await redis.hget(this.type, user?.id)) || '{}').card_count ?? 0
-    return newCardCount
+    //
+    //     const script = `
+    //   local data = redis.call("HGET", KEYS[1], ARGV[1])
+    //   if not data then
+    //     return 0
+    //   end
+    //
+    //   local obj = cjson.decode(data)
+    //   return obj.card_count or 0
+    // `
+    //     const newCardCount = (await redis.eval(script, 1, this.type, user?.id)) ?? 0
+    //     // return JSON.parse((await redis.hget(this.type, user?.id)) || '{}').card_count ?? 0
+    //     return newCardCount
 
     const result: any = collect(JSON.parse(this.players ?? '[]') ?? []).first(
       (item: any) => item.user_id == user?.id
@@ -186,12 +187,12 @@ export default class Room extends BaseModel {
     try {
       game = await Daberna.makeGame(this)
     } catch (e) {
-      await Telegram.logAdmins(String(e), null, Helper.TELEGRAM_TOPICS.bug)
+      await Telegram.logAdmins(String(e), null, Helper.TELEGRAM_TOPICS.BUG)
     } finally {
       await redis.del(this.lockKey)
       await redis.del(this.type)
-      return game
     }
+    return game
   }
   public async setUserCardsCount(count: number, us: User | null = null, ip: any) {
     const user = us ?? this.auth?.user
@@ -201,8 +202,8 @@ export default class Room extends BaseModel {
     const parsed: any = JSON.parse(this.players) ?? []
     const beforeExists = collect(parsed).first((item: any) => item.user_id == user.id)
 
-    if (await redis.exists(this.lockKey)) return false
-    await redis.set(this.lockKey, '1')
+    const lockAcquired = await redis.set(this.lockKey, '1', 'PX', 100, 'NX')
+    if (!lockAcquired) return false // Lock already exists, skip
     if (
       !(await this.redisAddPlayer(
         user.id,
@@ -215,12 +216,9 @@ export default class Room extends BaseModel {
         })
       ))
     ) {
-      result = false
-    } else {
-      result = true
+      return false
     }
-    await redis.del(this.lockKey)
-    return result
+
     // await redis.hset(
     //   `${this.type}`,
     //   user.id,
@@ -253,7 +251,7 @@ export default class Room extends BaseModel {
     }
     this.players = JSON.stringify(res)
     this.$dirty.players = true
-
+    await redis.del(this.lockKey)
     return true
   }
 

@@ -268,7 +268,7 @@ export default class RoomController {
 
       if (await room.setUserCardsCount(userBeforeCardCounts + cardCount, user, ip)) {
         if (userBeforeCardCounts === 0) {
-          room.playerCount = await redis.hlen(room.type) /*room.playerCount+1*/
+          room.playerCount = room.playerCount + 1 /*await redis.hlen(room.type)*/
           user.playCount++
         }
 
@@ -315,24 +315,24 @@ export default class RoomController {
         await user.useTransaction(trx).save()
 
         await trx.commit()
-        const pAll = await redis.hgetall(room.type)
+        // const pAll = await redis.hgetall(room.type)
 
-        const p = JSON.stringify(Object.values(pAll).map((v) => JSON.parse(v)))
+        // const p = JSON.stringify(Object.values(pAll).map((v) => JSON.parse(v)))
         // console.log(p)
         // console.log(typeof p)
         emitter.emit('room-update', {
           type: roomType,
           cmnd: 'card-added',
           game_id: room.clearCount,
-          cards: room.cardCount,
-          players: p /* room.players*/,
+          cards: room.cardCount /* */,
+          players: room.players /* p*/,
           start_with_me: room.startWithMe,
           seconds_remaining: room.playerCount > 1 ? room.secondsRemaining : room.maxSeconds,
-          player_count: await redis.hlen(room.type) /* room.playerCount*/,
+          player_count: room.playerCount /* await redis.hlen(room.type)*/,
           card_count: room.cardCount,
         })
 
-        return response.json({ user_balance: userFinancials.balance, players: p })
+        return response.json({ user_balance: userFinancials.balance, players: room.players /* p*/ })
       }
 
       await trx.rollback()
