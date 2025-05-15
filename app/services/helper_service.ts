@@ -218,7 +218,6 @@ class Helper {
   public static SUPPORT = {
     telegram: 'https://t.me/paris_admin1',
   }
-
   public static SOCKET_LINK = `https://${env.get('APP_URL')}` ?? 'http://127.0.0.1:3298'
   /*'http://172.16.6.2:3298' ??*/
   public static SOCKET_LINK_CLIENT = `https://${env.get('APP_URL')}` /* ?? '127.0.0.1:3298' ?? ''*/
