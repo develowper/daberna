@@ -125,7 +125,7 @@ export default class SocketIo {
           // const room = await Room.query().where('type', data?.type).first()
           // console.log('before remove players:', room.playerCount)
           // await room.setUser(this.user, 'remove')
-          console.log('after remove players:', room?.playerCount)
+          console.log(`after remove player ${this.user.username}:`, room?.playerCount)
         }
         socket.emit('left-room', data)
       })
