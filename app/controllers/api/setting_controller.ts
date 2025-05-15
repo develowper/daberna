@@ -73,7 +73,7 @@ export default class SettingController {
       rooms: Helper.ROOMS,
       ticket_statuses: Helper.TICKET_STATUSES,
       version: Helper.APP_VERSION,
-      support_links: supportLinks,
+      support_links: collect(supportLinks).whereNotIn('url', ['', null]),
       links: {
         socket: Helper.SOCKET_LINK,
         app: '',
