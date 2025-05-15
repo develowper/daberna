@@ -106,7 +106,11 @@ export default class Room extends BaseModel {
 
   @computed()
   public get userCardCount() {
-    return this.getUserCardCount()
+    return (
+      collect(JSON.parse(this.players ?? '[]') ?? []).first(
+        (item: any) => item.user_id == this.auth?.user
+      )?.card_count ?? 0
+    )
   }
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
@@ -115,6 +119,16 @@ export default class Room extends BaseModel {
   public async getUserCardCount() {
     const user = this.auth?.user
 
+    const script = `
+  local data = redis.call("HGET", KEYS[1], ARGV[1])
+  if not data then
+    return 0
+  end
+
+  local obj = cjson.decode(data)
+  return obj.card_count or 0
+`
+    const newCardCount = (await redis.eval(script, 1, this.type, user?.id)) ?? 0
     // return JSON.parse((await redis.hget(this.type, user?.id)) || '{}').card_count ?? 0
 
     const result: any = collect(JSON.parse(this.players ?? '[]') ?? []).first(
@@ -172,6 +186,7 @@ export default class Room extends BaseModel {
     const user = us ?? this.auth?.user
     if (!user) return false
     let res: any[] = []
+    let result = false
     const parsed: any = JSON.parse(this.players) ?? []
     const beforeExists = collect(parsed).first((item: any) => item.user_id == user.id)
 
@@ -188,9 +203,13 @@ export default class Room extends BaseModel {
           card_count: count,
         })
       ))
-    )
-      return false
-
+    ) {
+      result = false
+    } else {
+      result = true
+    }
+    await redis.del(this.lockKey)
+    return result
     // await redis.hset(
     //   `${this.type}`,
     //   user.id,
@@ -224,7 +243,6 @@ export default class Room extends BaseModel {
     this.players = JSON.stringify(res)
     this.$dirty.players = true
 
-    await redis.del(this.lockKey)
     return true
   }
 
