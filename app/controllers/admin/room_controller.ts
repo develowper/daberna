@@ -97,7 +97,7 @@ export default class RoomController {
     switch (cmnd) {
       case 'status':
         data.isActive = isActive
-        await redis.del(data.type)
+        await redis.del(data.lockKey)
         await data.save()
         if (data.game == 'blackjack') {
           await Blackjack.query().where('type', data.type).update({ isActive: isActive })
