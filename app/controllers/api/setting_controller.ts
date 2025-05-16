@@ -31,7 +31,7 @@ export default class SettingController {
       ])
     )
     const appInfo: any = JSON.parse(
-      settings.first((item) => item.key === 'app_version')?.value ?? '[]'
+      settings.first((item) => item.key === 'app_info')?.value ?? '[]'
     )
     appInfo.version = Number(appInfo.version)
     // const ads: any = JSON.parse(settings.first((item) => item.key === 'ads')?.value ?? '[]')
