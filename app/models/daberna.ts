@@ -11,6 +11,7 @@ import Setting from '#models/setting'
 import Log from '#models/log'
 import Telegram from '#services/telegram_service'
 import redis from '@adonisjs/redis/services/main'
+import db from '@adonisjs/lucid/services/db'
 
 export default class Daberna extends BaseModel {
   static table = 'daberna'
@@ -433,7 +434,8 @@ export default class Daberna extends BaseModel {
 
     let l = `gameId:${game.id}\n`
     const c = users.where('role', 'us').count()
-    // console.time(`updateBalances${room.type}${c}`) // Start timer
+    const updates = []
+    console.time(`updateBalances ${room.type} ${c}`) // Start timer
     for (const user of users.where('role', 'us')) {
       const financial = user.financial ?? (await user.related('financial').create({ balance: 0 }))
       const p: any = collect(players).where('user_id', user.id).first()
@@ -443,11 +445,21 @@ export default class Daberna extends BaseModel {
       const buy = Number.parseInt(`${p.card_count ?? 0}`) * room.cardPrice
       financial.balance -= buy
       const to = financial.balance
-      await financial.save()
+      // await financial.save()
+      updates.push({ user_id: user.id, balance: financial.balance })
       l += `userId:${user.id}(${user.username}) buy ${buy} [${from}-${to}] \n`
       // await redis.srem('in', user.id)
     }
-    // console.timeEnd(`updateBalances${room.type}${c}`) // End timer and print duration
+    if (updates.length) {
+      await db.rawQuery(`
+      UPDATE user_financials
+      SET balance = CASE user_id
+        ${updates.map((u) => `WHEN ${u.user_id} THEN ${u.balance}`).join('\n')}
+      END
+      WHERE user_id IN (${updates.map((u) => u.user_id).join(',')})
+    `)
+    }
+    console.timeEnd(`updateBalances ${room.type} ${c}`) // End timer and print duration
     // console.log(users.where('role', 'us').count(), l)
     if (logText != '')
       Telegram.logAdmins(`${logText}\n ${l}`, null, null ?? Helper.TELEGRAM_TOPICS.DABERNA_GAME)
