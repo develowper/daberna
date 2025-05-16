@@ -75,7 +75,8 @@ export default class SettingController {
       call_speed: Helper.CALL_SPEED,
       rooms: Helper.ROOMS,
       ticket_statuses: Helper.TICKET_STATUSES,
-      version: Helper.APP_VERSION,
+      version:
+        Number(settings.first((item) => item.key == 'app_version')?.value) ?? Helper.APP_VERSION,
       support_links: collect(supportLinks).whereNotIn('url', ['', null]),
       links: {
         socket: Helper.SOCKET_LINK,
