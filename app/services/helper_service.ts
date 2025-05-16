@@ -477,15 +477,17 @@ class Helper {
     { title: Helper.__('processing'), key: 'processing', color: 0xff4477ce },
     { title: Helper.__('closed'), key: 'closed', color: 0xffe74646 },
   ]
-  public static MARKETS = {
-    bazaar: '',
-    myket: '',
-    playstore: '',
-    bank: '',
-  }
+
   public static TELEGRAM_BOT: string = 'daberna_bot'
   public static TELEGRAM_CHANNEL: string = 'dabernaparis'
-
+  public static MARKETS = {
+    'bazaar': '',
+    'myket': '',
+    'playstore': '',
+    'bank': '',
+    '': `https://t.me/${Helper.TELEGRAM_BOT}`,
+    'telegram': `https://t.me/${Helper.TELEGRAM_BOT}`,
+  }
   public static getFakeHttpCtx(): HttpContext {
     return (
       storage?.getStore() ?? ({ i18n: i18nManager?.locale(env.get('LOCALE', '')) } as HttpContext)
@@ -651,11 +653,7 @@ class Helper {
         value: Helper.APP_DOWNLOAD_URL,
         title: __('app_url'),
       },
-      {
-        key: 'app_version',
-        value: Helper.APP_VERSION,
-        title: __('app_version'),
-      },
+
       {
         key: 'register_is_active',
         value: 1,
@@ -735,9 +733,13 @@ class Helper {
         ]),
       },
       {
-        key: 'app_version',
-        value: 1,
-        title: __('app_version'),
+        key: 'app_info',
+        value: JSON.stringify({
+          version: 1,
+          update_title: __('app_new_version_available'),
+          update_link: `https://t.me/${Helper.TELEGRAM_BOT}`,
+        }),
+        title: __('app_info'),
       },
       // {
       //   key: 'enamad',

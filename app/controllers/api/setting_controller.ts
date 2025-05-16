@@ -27,10 +27,14 @@ export default class SettingController {
         'blackjack_help',
         'header_message',
         'ads',
-        'app_version',
+        'app_info',
       ])
     )
-    const ads: any = JSON.parse(settings.first((item) => item.key === 'ads')?.value ?? '[]')
+    const appInfo: any = JSON.parse(
+      settings.first((item) => item.key === 'app_version')?.value ?? '[]'
+    )
+    // const ads: any = JSON.parse(settings.first((item) => item.key === 'ads')?.value ?? '[]')
+
     const cards: { active: number; number: string; name: string }[] = JSON.parse(
       settings.first((item) => item.key === 'card_to_card')?.value ?? '[]'
     )
@@ -75,8 +79,8 @@ export default class SettingController {
       call_speed: Helper.CALL_SPEED,
       rooms: Helper.ROOMS,
       ticket_statuses: Helper.TICKET_STATUSES,
-      version:
-        Number(settings.first((item) => item.key == 'app_version')?.value) ?? Helper.APP_VERSION,
+      version: appInfo.update_version ?? Helper.APP_VERSION,
+      app_info: appInfo,
       support_links: collect(supportLinks).whereNotIn('url', ['', null]),
       links: {
         socket: Helper.SOCKET_LINK,
