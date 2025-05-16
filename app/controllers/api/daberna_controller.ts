@@ -53,7 +53,10 @@ export default class DabernaController {
       i.id = item.id
       i.title = i18n.t('messages.room_*', { item: item.type.slice(1) })
       i.type = item.type
-      i.created_at = item.createdAt?.setLocale('fa-IR')?.toLocaleString(DateTime.DATETIME_SHORT)
+      i.created_at = item.createdAt
+        ?.setZone('Asia/Tehran')
+        ?.setLocale('fa-IR')
+        ?.toLocaleString(DateTime.DATETIME_SHORT)
       i.card_count = JSON.parse(item.boards).filter((u) => u.user_id == userId).length
       i.win_prize = JSON.parse(item.winners)
         .filter((u) => u.user_id == userId)

@@ -229,7 +229,7 @@ class Helper {
     'BQACAgQAAxkBAAIBc2dpi3RyNuYZ1PKaZO6L0Rh0gQyQAAIpFQACyetQUzf-QIGKBw6bNgQ'
 
   public static ENAMAD = `<a referrerpolicy='origin' target='_blank' href='https://trustseal.enamad.ir/?id=565455&Code=WNIwA9GN3WFa1TNq7pu6HeHTJCQzv9T6'><img referrerpolicy='origin' src='https://trustseal.enamad.ir/logo.aspx?id=565455&Code=WNIwA9GN3WFa1TNq7pu6HeHTJCQzv9T6' alt='' style='cursor:pointer' code='WNIwA9GN3WFa1TNq7pu6HeHTJCQzv9T6'></a>`
-  public static APP_VERSION = 1
+  public static APP_VERSION = 4
   public static PAGINATE = 24
   public static MIN_CHARGE = 50000
   public static MIN_WITHDRAW = 100000
@@ -681,6 +681,7 @@ class Helper {
         value: 1,
         title: __('cardtocard_minute_limit'),
       },
+
       {
         key: 'ref_commission_text',
         value: __('ref_text'),
@@ -732,6 +733,11 @@ class Helper {
             is_active: 1,
           },
         ]),
+      },
+      {
+        key: 'app_version',
+        value: 1,
+        title: __('app_version'),
       },
       // {
       //   key: 'enamad',

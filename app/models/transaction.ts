@@ -9,8 +9,10 @@ export default class Transaction extends BaseModel {
   @computed()
   public get createdAtShamsi() {
     if (!this.createdAt) return ''
-    const dt = this.createdAt.setLocale('fa-IR')
-    return dt.toLocaleString(DateTime.DATETIME_SHORT)
+    return this.createdAt
+      .setLocale('fa-IR')
+      .setZone('Asia/Tehran')
+      .toLocaleString(DateTime.DATETIME_SHORT)
   }
 
   @column({ isPrimary: true })
