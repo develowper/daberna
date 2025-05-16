@@ -19,7 +19,7 @@ export default class SettingController {
     const paginate = request.input('paginate') ?? Helper.PAGINATE
     const search = request.input('search')
     const dir = request.input('dir') ?? 'DESC'
-    const sort = request.input('order_by') ?? 'created_at'
+    const sort = request.input('order_by') ?? 'id'
 
     let query = Setting.query()
 
