@@ -232,7 +232,19 @@
                     />
                   </div>
                 </td>
-                <td class="flex flex-col items-center px-6 py-4 text-gray-900 whitespace-nowrap">
+                <td
+                  @click="
+                    ;(params.id = d.id),
+                      (params.key = d.key),
+                      (params.title = d.title),
+                      (params.value = toJson(d.value) ? toJson(d.value) : d.value),
+                      modal.show()
+                  "
+                  data-te-toggle="modal"
+                  data-te-target="#settingModal"
+                  data-te-ripple-init
+                  class="flex hover:cursor-pointer hover:text-gray-400 flex-col items-center px-6 py-4 text-gray-900 whitespace-nowrap"
+                >
                   <div>{{ d.key }}</div>
                   <div class="text-xs text-gray-500">{{ d.title }}</div>
                 </td>
