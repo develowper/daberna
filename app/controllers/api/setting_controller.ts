@@ -33,7 +33,7 @@ export default class SettingController {
     const appInfo: any = JSON.parse(
       settings.first((item) => item.key === 'app_version')?.value ?? '[]'
     )
-    appInfo.update_version = Number(appInfo.version)
+    appInfo.version = Number(appInfo.version)
     // const ads: any = JSON.parse(settings.first((item) => item.key === 'ads')?.value ?? '[]')
 
     const cards: { active: number; number: string; name: string }[] = JSON.parse(
@@ -80,7 +80,7 @@ export default class SettingController {
       call_speed: Helper.CALL_SPEED,
       rooms: Helper.ROOMS,
       ticket_statuses: Helper.TICKET_STATUSES,
-      version: appInfo.update_version ?? Helper.APP_VERSION,
+      version: appInfo.version ?? Helper.APP_VERSION,
       app_info: appInfo,
       support_links: collect(supportLinks).whereNotIn('url', ['', null]),
       links: {
