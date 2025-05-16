@@ -738,6 +738,8 @@ class Helper {
           version: 1,
           update_title: __('app_new_version_available'),
           update_link: `https://t.me/${Helper.TELEGRAM_BOT}`,
+          maintenance: 0,
+          testers: '1\n2',
         }),
         title: __('app_info'),
       },
