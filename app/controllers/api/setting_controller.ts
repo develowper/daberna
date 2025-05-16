@@ -33,6 +33,7 @@ export default class SettingController {
     const appInfo: any = JSON.parse(
       settings.first((item) => item.key === 'app_version')?.value ?? '[]'
     )
+    appInfo.update_version = Number(appInfo.version)
     // const ads: any = JSON.parse(settings.first((item) => item.key === 'ads')?.value ?? '[]')
 
     const cards: { active: number; number: string; name: string }[] = JSON.parse(
