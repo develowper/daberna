@@ -165,7 +165,7 @@ export default class UserController {
 
           await AgencyFinancial.query()
             .where('id', data.agencyId)
-            .increment('balance', (cmnd == 'withdraw' ? 1 : -1) * amount)
+            .increment('balance', (cmnd == 'withdraw' ? 1 : -1) * Math.abs(amount))
           await Log.add(
             `a_${data?.agencyId}`,
             1,
