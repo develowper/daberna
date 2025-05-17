@@ -523,7 +523,7 @@ export default class BotController {
                   fromId: _fromId,
                   toType: _toType,
                   toId: _toId,
-                  amount: amount,
+                  amount: Math.abs(amount),
                   payId: now.toMillis(),
                   payedAt: now,
                   appVersion: null,
