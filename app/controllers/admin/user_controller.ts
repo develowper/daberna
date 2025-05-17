@@ -170,7 +170,7 @@ export default class UserController {
             `a_${data?.agencyId}`,
             1,
             1,
-            (cmnd == 'withdraw' ? 1 : -1) * amount,
+            (cmnd == 'withdraw' ? 1 : -1) * Math.abs(amount),
             DateTime.now().startOf('day').toJSDate()
           )
           const t = await Transaction.create({
