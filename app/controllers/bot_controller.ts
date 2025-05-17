@@ -542,7 +542,7 @@ export default class BotController {
                   `a_${this.user?.agencyId}`,
                   1,
                   1,
-                  (amount < 0 ? 1 : -1) * amount,
+                  -amount,
                   DateTime.now().startOf('day').toJSDate()
                 )
 
