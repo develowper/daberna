@@ -508,7 +508,7 @@ export default class BotController {
                   title:
                     amount < 0
                       ? __('wallet_withdraw_*_from_*', {
-                          item1: `${asPrice(`${amount}`)} ${__('currency')}`,
+                          item1: `${asPrice(`${Math.abs(amount)}`)} ${__('currency')}`,
                           item2: `${__('user')} (${user?.id})`,
                           item3: `${__('balance_update')}`,
                         })
