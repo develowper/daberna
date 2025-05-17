@@ -484,7 +484,13 @@ export default class TransactionsController {
       else if (type == 'charge') query.whereIn('type', ['charge', 'cardtocard'])
       else query.where('type', type)
     }
+    const paginated = await query.orderBy(sort, dir).paginate(page, Helper.PAGINATE)
+    paginated.forEach((item) => {
+      if (item.type === 'withdraw') {
+        item.amount = -Math.abs(item.amount)
+      }
+    })
 
-    return response.json(await query.orderBy(sort, dir).paginate(page, Helper.PAGINATE))
+    return response.json(paginated)
   }
 }
