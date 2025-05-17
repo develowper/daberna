@@ -467,7 +467,7 @@ export default class BotController {
           await Telegram.sendMessage(fromId, msg, null, null, await this.getKeyboard('user_main'))
         }
         //
-        else if (['charge*'].some((i) => startsWith(text, i)) && this.isAdmin) {
+        else if (['charge*'].some((i) => startsWith(text, i))) {
           const parts = text.split('*')
           if (
             parts.length === 3 &&
@@ -500,7 +500,7 @@ export default class BotController {
               const _fromId = amount < 0 ? user.id : user.agencyId
               const _toType = amount < 0 ? 'agency' : 'user'
               const _toId = amount < 0 ? user.agencyId : user.id
-
+              const cmnd = amount < 0 ? 'withdraw' : 'charge'
               //
               if (await userFinancial.save()) {
                 const t = await Transaction.create({
@@ -536,8 +536,7 @@ export default class BotController {
                 await AgencyFinancial.query()
                   .where('id', this.user?.agencyId ?? 0)
                   .increment('balance', -amount)
-              }
-              if (await userFinancial.save()) {
+
                 await Log.add(
                   `a_${this.user?.agencyId}`,
                   1,
@@ -550,22 +549,23 @@ export default class BotController {
                 await this.simpleResponse(fromId, '🟢 با موفقیت انجام شد')
                 await this.simpleResponse(fromId, m)
                 if (user.telegramId) await this.simpleResponse(user.telegramId, m)
+                return
               }
+              return
             }
-          } else {
             await this.simpleResponse(fromId, '🔴 دستور نامعتبر')
+            return
           }
         }
+      } else {
+        // Telegram.sendMessage(Helper.TELEGRAM_LOGS[0], JSON.stringify(update, null, 2))
       }
-    } else {
-      // Telegram.sendMessage(Helper.TELEGRAM_LOGS[0], JSON.stringify(update, null, 2))
+      // console.log('**************')
+      // console.log(res)
+      // console.log(request.body())
+      return request.body()
     }
-    // console.log('**************')
-    // console.log(res)
-    // console.log(request.body())
-    return request.body()
   }
-
   async getKeyboard(type) {
     let tmp
     switch (type) {
