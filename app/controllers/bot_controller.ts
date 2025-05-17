@@ -546,7 +546,7 @@ export default class BotController {
                   DateTime.now().startOf('day').toJSDate()
                 )
 
-                const m = `💲${__('balance_update')}\n${__('user')} ${user.username}\n${__('balance')}: ${asPrice(afterBalance)}\n 🅿🅰🆁🅸🆂\n}`
+                const m = `💲${__('balance_update')}\n${__('user')} ${user.username}\n${__('balance')}: ${asPrice(afterBalance)}\n 🅿🅰🆁🅸🆂\n`
                 await this.simpleResponse(fromId, '🟢 با موفقیت انجام شد')
                 await this.simpleResponse(fromId, m)
                 if (user.telegramId) await this.simpleResponse(user.telegramId, m)
