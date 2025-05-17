@@ -480,7 +480,7 @@ export default class BotController {
             if (cmnd == 'charge') {
               const now = DateTime.now()
               const userId = parts[1]
-              const amount = parts[2]
+              const amount = Number(parts[2])
               const user = await User.query()
                 .preload('financial')
                 .where({ id: userId ?? 0 })
