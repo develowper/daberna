@@ -12,6 +12,8 @@ import { createUserFakeValidator, createUserValidator, updateUserValidator } fro
 import Telegram from '#services/telegram_service'
 import hash from '@adonisjs/core/services/hash'
 import db from '@adonisjs/lucid/services/db'
+import AgencyFinancial from '#models/agency_financial'
+import Log from '#models/log'
 
 export default class UserController {
   //
@@ -154,33 +156,49 @@ export default class UserController {
         const beforeBalance = data.financial?.balance ?? 0
         if (cmnd == 'withdraw') data.financial.balance -= amount
         else data.financial.balance += amount
-        await data.financial.save()
-        const afterBalance = data.financial?.balance ?? 0
-        const t = await Transaction.create({
-          agencyId: data?.agencyId,
-          title: desc,
-          type: cmnd,
-          gateway: 'wallet',
-          fromType: 'user',
-          fromId: data?.id,
-          toType: 'user',
-          toId: data?.id,
-          amount: amount,
-          payId: now.toMillis(),
-          payedAt: now,
-          appVersion: null,
-          info: JSON.stringify({
-            before_balance: beforeBalance,
-            after_balance: afterBalance,
-          }),
-        })
-        Telegram.log(null, 'transaction_created', t)
+        if (await data.financial.save()) {
+          const afterBalance = data.financial?.balance ?? 0
+          const fromType = cmnd == 'withdraw' ? 'user' : 'agency'
+          const fromId = cmnd == 'withdraw' ? data.id : data.agencyId
+          const toType = cmnd == 'withdraw' ? 'agency' : 'user'
+          const toId = cmnd == 'withdraw' ? data.agencyId : data.id
 
-        return response.send({
-          status: 'success',
-          message: __('updated_successfully'),
-          balance: data.financial.balance,
-        })
+          await AgencyFinancial.query()
+            .where('id', data.agencyId)
+            .increment('balance', (cmnd == 'withdraw' ? 1 : -1) * amount)
+          await Log.add(
+            `a_${data?.agencyId}`,
+            1,
+            1,
+            (cmnd == 'withdraw' ? 1 : -1) * amount,
+            DateTime.now().startOf('day').toJSDate()
+          )
+          const t = await Transaction.create({
+            agencyId: data?.agencyId,
+            title: desc,
+            type: cmnd,
+            gateway: 'wallet',
+            fromType: fromType,
+            fromId: fromId,
+            toType: toType,
+            toId: toId,
+            amount: amount,
+            payId: now.toMillis(),
+            payedAt: now,
+            appVersion: null,
+            info: JSON.stringify({
+              before_balance: beforeBalance,
+              after_balance: afterBalance,
+            }),
+          })
+          Telegram.log(null, 'transaction_created', t)
+
+          return response.send({
+            status: 'success',
+            message: __('updated_successfully'),
+            balance: data.financial.balance,
+          })
+        }
         break
 
       case 'info':

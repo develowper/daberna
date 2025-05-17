@@ -11,6 +11,7 @@ import Telegram from '#services/telegram_service'
 import Transaction from '#models/transaction'
 import db from '@adonisjs/lucid/services/db'
 import Daberna from '#models/daberna'
+import Agency from '#models/agency'
 
 export default class DailyReport extends BaseCommand {
   static commandName = 'report:daily'
@@ -100,7 +101,10 @@ export default class DailyReport extends BaseCommand {
       .where('created_at', '>', now.minus({ hours: 24 }).toJSDate())
       .count('* as total')
 
-    const types = Helper.ROOMS.map((item) => item.type)
+    const agencyIds = await Agency.query().select('id')
+    const agencyTypes = agencyIds.map((agency) => `a_${agency.id}`)
+
+    const types = [...Helper.ROOMS.map((item) => item.type), ...agencyTypes]
 
     msg += '                📊 آمار امروز' + '\n'
     msg += '👤 کاربران جدید: ' + (uc[0]?.$extras.total ?? 0) + '\n'

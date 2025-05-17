@@ -2,7 +2,7 @@ import { HttpContext } from '@adonisjs/core/http'
 import User from '#models/user'
 import Admin from '#models/admin'
 import Telegram from '#services/telegram_service'
-import Helper, { asPrice, replace, startsWith, myMap } from '#services/helper_service'
+import Helper, { asPrice, replace, startsWith, myMap, __ } from '#services/helper_service'
 import vine, { errors } from '@vinejs/vine'
 import Setting from '#models/setting'
 import Referral from '#models/referral'
@@ -16,6 +16,9 @@ import AgencyFinancial from '#models/agency_financial'
 import { DateTime } from 'luxon'
 import Log from '#models/log'
 import db from '@adonisjs/lucid/services/db'
+import { isAdmin } from '../../inertia/js/mixins.js'
+import Transaction from '#models/transaction'
+import Agency from '#models/agency'
 
 export default class BotController {
   public user: User | Admin | null
@@ -454,9 +457,104 @@ export default class BotController {
           //     return tmp
           //   })
           //   .join('\n')
-          msg += (await Log.roomsTable(Helper.ROOMS.map((item) => item.type))) + '\n'
+          const agencyIds = await Agency.query().select('id')
+          const agencyTypes = agencyIds.map((agency) => `a_${agency.id}`)
+
+          const types = [...Helper.ROOMS.map((item) => item.type), ...agencyTypes]
+
+          msg += (await Log.roomsTable(types)) + '\n'
           msg += '🅿🅰🆁🅸🆂' + '\n'
           await Telegram.sendMessage(fromId, msg, null, null, await this.getKeyboard('user_main'))
+        }
+        //
+        else if (['charge:'].some((i) => startsWith(text, i)) && this.isAdmin) {
+          const parts = text.split('*')
+          if (
+            parts.length === 3 &&
+            !Number.isNaN(Number(parts[1])) &&
+            !Number.isNaN(Number(parts[2])) &&
+            parts[2] != 0
+          ) {
+            const cmnd = parts[0]
+
+            if (cmnd == 'charge') {
+              const now = DateTime.now()
+              const userId = parts[1]
+              const amount = parts[2]
+              const user = await User.query()
+                .preload('financial')
+                .where({ id: userId ?? 0 })
+                .first()
+
+              if (!user) {
+                await this.simpleResponse(fromId, '🔴 کاربر یافت نشد')
+                return
+              }
+              const userFinancial =
+                user?.financial ?? (await user?.related('financial').create({ balance: 0 }))
+              const beforeBalance = userFinancial.balance
+              userFinancial.balance += amount
+              const afterBalance = userFinancial.balance
+
+              const _fromType = amount < 0 ? 'user' : 'agency'
+              const _fromId = amount < 0 ? user.id : user.agencyId
+              const _toType = amount < 0 ? 'agency' : 'user'
+              const _toId = amount < 0 ? user.agencyId : user.id
+
+              //
+              if (await userFinancial.save()) {
+                const t = await Transaction.create({
+                  agencyId: this.user?.agencyId,
+                  title:
+                    amount < 0
+                      ? __('wallet_withdraw_*_from_*', {
+                          item1: `${asPrice(`${amount}`)} ${__('currency')}`,
+                          item2: `${__('user')} (${user?.id})`,
+                          item3: `${__('balance_update')}`,
+                        })
+                      : __('wallet_charge_*_*_for_*', {
+                          item1: `${asPrice(`${amount}`)} ${__('currency')}`,
+                          item2: `${__('user')} (${user?.id})`,
+                          item3: `${__('balance_update')}`,
+                        }),
+                  type: cmnd,
+                  gateway: 'wallet',
+                  fromType: _fromType,
+                  fromId: _fromId,
+                  toType: _toType,
+                  toId: _toId,
+                  amount: amount,
+                  payId: now.toMillis(),
+                  payedAt: now,
+                  appVersion: null,
+                  info: JSON.stringify({
+                    before_balance: beforeBalance,
+                    after_balance: afterBalance,
+                  }),
+                })
+
+                await AgencyFinancial.query()
+                  .where('id', this.user?.agencyId ?? 0)
+                  .increment('balance', (amount < 0 ? 1 : -1) * amount)
+              }
+              if (await userFinancial.save()) {
+                await Log.add(
+                  `a_${this.user?.agencyId}`,
+                  1,
+                  1,
+                  (amount < 0 ? 1 : -1) * amount,
+                  DateTime.now().startOf('day').toJSDate()
+                )
+
+                const m = `💲${__('balance_update')}\n${__('user')} ${user.username}\n${__('balance')}: ${asPrice(afterBalance)}\n 🅿🅰🆁🅸🆂\n}`
+                await this.simpleResponse(fromId, '🟢 با موفقیت انجام شد')
+                await this.simpleResponse(fromId, m)
+                if (user.telegramId) await this.simpleResponse(user.telegramId, m)
+              }
+            }
+          } else {
+            await this.simpleResponse(fromId, '🔴 دستور نامعتبر')
+          }
         }
       }
     } else {
@@ -612,5 +710,9 @@ export default class BotController {
 
   public async sendLog({ request }: HttpContext) {
     Telegram.sendMessage(`${Helper.TELEGRAM_LOGS[0]}`, request.input('message'))
+  }
+
+  private async simpleResponse(fromId: any, msg: any) {
+    await Telegram.sendMessage(fromId, msg, null, null, await this.getKeyboard('user_main'))
   }
 }

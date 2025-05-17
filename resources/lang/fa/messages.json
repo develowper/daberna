@@ -195,6 +195,7 @@
   "wallet_charge_*_by_*": "شارژ {item1} کیف پول توسط {item2}",
   "wallet_withdraw_*_from_*": "برداشت {item1} از کیف پول {item2} بابت {item3}",
   "wallet_charge_*_*_for_*": "شارژ {item1} کیف پول {item2} بابت {item3}",
+  "balance_update": "بروزرسانی حساب",
   "payment_success": "پرداخت موفقیت آمیز بود",
   "payment_fail": "پرداخت با خطا مواجه شد",
   "pay_id": "شناسه پرداخت",
