@@ -467,7 +467,7 @@ export default class BotController {
           await Telegram.sendMessage(fromId, msg, null, null, await this.getKeyboard('user_main'))
         }
         //
-        else if (['charge:'].some((i) => startsWith(text, i)) && this.isAdmin) {
+        else if (['charge*'].some((i) => startsWith(text, i)) && this.isAdmin) {
           const parts = text.split('*')
           if (
             parts.length === 3 &&
