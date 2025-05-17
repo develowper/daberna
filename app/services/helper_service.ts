@@ -240,7 +240,7 @@ class Helper {
   public static CARDTOCARD_MINUTE_LIMIT = 1
   public static WINWHEEL_HOUR_LIMIT = 24
   public static WITHDRAW_HOUR_LIMIT = 24
-  public static DABERNA_LOG_DAY_LIMIT = 7
+  public static DABERNA_LOG_DAY_LIMIT = 3
   public static AGENCY_REF_COUNT = 25
   public static REF_COMMISSION_PERCENT = 0
   public static TOP_USERS_COUNT = 3
