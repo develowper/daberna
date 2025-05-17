@@ -96,7 +96,10 @@ export default class SettingController {
         instagram: '',
         eitaa: '',
         email: supportEmail,
-        market: Helper.MARKETS,
+        market: {
+          ...Helper.MARKETS,
+          '': appInfo.update_link,
+        },
       },
       questions: [
         {
