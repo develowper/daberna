@@ -535,7 +535,7 @@ export default class BotController {
 
                 await AgencyFinancial.query()
                   .where('id', this.user?.agencyId ?? 0)
-                  .increment('balance', (amount < 0 ? 1 : -1) * Math.abs(amount))
+                  .increment('balance', -amount)
               }
               if (await userFinancial.save()) {
                 await Log.add(
