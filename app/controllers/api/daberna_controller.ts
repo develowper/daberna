@@ -101,6 +101,7 @@ export default class DabernaController {
           win_prize: 0,
           row_win_prize: 0,
         }
+
       const groupedArray = Object.values(grouped)
 
       const formattedGroupedArray = groupedArray.map((group) => ({
