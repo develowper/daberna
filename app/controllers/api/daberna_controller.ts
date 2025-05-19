@@ -119,6 +119,7 @@ export default class DabernaController {
           rooms: formattedGroupedArray,
           title: i18n.t('messages.last_*_hours_log', { item: hourLimit }),
         },
+        meta: { total: formattedGroupedArray.length },
       })
     }
     // console.log(res.getMeta())
