@@ -544,11 +544,11 @@ export default class Daberna extends BaseModel {
         item3: `${__(`user`)} (${user.username})`,
       })
       if (user?.role == 'us') {
-        blackList = blackList.filter((id: any) => `${id}` !== `${user?.id}`)
-        blackList.push(`${user?.id}`)
-        if (blackList.length > Helper.BLACKLIST_LIMIT) {
-          blackList.shift()
-        }
+        // blackList = blackList.filter((id: any) => `${id}` !== `${user?.id}`)
+        // blackList.push(`${user?.id}`)
+        // if (blackList.length > Helper.BLACKLIST_LIMIT) {
+        //   blackList.shift()
+        // }
 
         await Transaction.add(
           'win',
