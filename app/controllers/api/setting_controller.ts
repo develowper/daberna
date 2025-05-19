@@ -66,6 +66,7 @@ export default class SettingController {
       game_types: collect(Helper.ROOMS).map((item) =>
         collect(item).only(['game', 'type', 'cardPrice']).all()
       ),
+      log_hours_limit: `${Helper.DABERNA_LOG_HOUR_LIMIT}`,
       ad: Helper.AD,
       blackjack_help: blackjackHelp,
       cards: Helper.BLACKJACK.cards,
