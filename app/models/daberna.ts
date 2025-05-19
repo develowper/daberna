@@ -549,10 +549,8 @@ export default class Daberna extends BaseModel {
         // if (blackList.length > Helper.BLACKLIST_LIMIT) {
         //   blackList.shift()
         // }
-        console.log(
-          ` ${user?.username} (${user?.id}) is in blacklist but win game ${game.id} `,
-          blackList.includes(`${user?.id}`)
-        )
+        if (blackList.includes(`${user?.id}`))
+          console.log(` ${user?.username} (${user?.id}) is in blacklist but win game ${game.id} `)
         await Transaction.add(
           'win',
           'daberna',
