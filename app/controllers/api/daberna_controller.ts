@@ -101,7 +101,6 @@ export default class DabernaController {
         (total, group) => total + group.win_prize + group.row_win_prize,
         0
       )
-
       return {
         prize: asPrice(prize),
         rooms: formattedGroupedArray,
