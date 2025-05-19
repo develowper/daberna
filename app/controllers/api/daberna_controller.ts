@@ -96,7 +96,7 @@ export default class DabernaController {
 
       for (let t of allTypes)
         grouped[`${t}`] = grouped[`${t}`] || {
-          t,
+          type: `${t}`.slice(1),
           card_count: 0,
           win_prize: 0,
           row_win_prize: 0,
