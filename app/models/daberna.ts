@@ -127,7 +127,7 @@ export default class Daberna extends BaseModel {
 
     blackList = `${blackList}`
       .split('\n')
-      .map((i: any) => i.trim())
+      .map((i: any) => `${i.trim()}`)
       .filter((s: any) => s !== '')
 
     let jokerInGame: boolean =
