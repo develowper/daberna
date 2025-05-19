@@ -93,6 +93,7 @@ export default class DabernaController {
       }, {})
 
       const allTypes = collect(Helper.ROOMS).where('game', 'daberna').pluck('type')
+
       for (let t of allTypes)
         grouped[`${t}`] = grouped[`${t}`] || {
           t,
