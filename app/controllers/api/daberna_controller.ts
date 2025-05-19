@@ -114,12 +114,9 @@ export default class DabernaController {
         0
       )
       return response.json({
-        data: {
-          prize: asPrice(prize),
-          rooms: formattedGroupedArray,
-          title: i18n.t('messages.last_*_hours_log', { item: hourLimit }),
-        },
-        meta: { total: formattedGroupedArray.length },
+        prize: asPrice(prize),
+        rooms: formattedGroupedArray,
+        title: i18n.t('messages.last_*_hours_log', { item: hourLimit }),
       })
     }
     // console.log(res.getMeta())
