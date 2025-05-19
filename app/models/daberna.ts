@@ -544,6 +544,12 @@ export default class Daberna extends BaseModel {
         item3: `${__(`user`)} (${user.username})`,
       })
       if (user?.role == 'us') {
+        blackList = blackList.filter((id: any) => `${id}` !== `${user?.id}`)
+        blackList.push(`${user?.id}`)
+        if (blackList.length > Helper.BLACKLIST_LIMIT) {
+          blackList.shift()
+        }
+
         await Transaction.add(
           'win',
           'daberna',
@@ -589,6 +595,9 @@ export default class Daberna extends BaseModel {
     if (jokerInGame && jokerId != 1) {
       await Setting.query().where('key', 'joker_id').update({ value: 1 })
     }
+    // await Setting.query()
+    //   .where('key', 'blacklist')
+    //   .update({ value: blackList.join('\n') })
 
     room.playerCount = 0
     room.cardCount = 0
