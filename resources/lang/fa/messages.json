@@ -215,6 +215,7 @@
   "you_most_play_*_for_winwheel_yours_*": "حداقل انجام {item1} بازی جهت فعال شدن گردونه نیاز است. تعداد بازی شما : {item2}",
   "winner_prize_*_*": "جایزه {item1}: {item2} تومان",
   "too_many_try_after_*": "درخواست بیش از حد. لطفا {seconds} ثانیه دیگر اقدام کنید",
+  "last_*_hours_log": " گزارش {item} ساعت اخیر",
   "clear_transactions_day": "پاکسازی تراکنش ها (روز)",
   "clear_inactive_users_day": "پاکسازی کاربران بدون خرید شارژ (روز)",
   "telegram_bot_without_@": "ایدی ربات تلگرام (بدون  @)",

@@ -1,5 +1,5 @@
 // import type { HttpContext } from '@adonisjs/core/http'
-import Helper, { isPG } from '#services/helper_service'
+import Helper, { asPrice, isPG } from '#services/helper_service'
 import { HttpContext } from '@adonisjs/core/http'
 import Daberna from '#models/daberna'
 import { DateTime } from 'luxon'
@@ -14,6 +14,7 @@ export default class DabernaController {
     const type = request.input('type')
     const dir = request.input('dir') ?? 'DESC'
     let sort = request.input('order_by') ?? 'created_at'
+    let hourLimit = request.input('hour_limit')
     sort = ['row_win_prize', 'win_prize', 'card_count'].includes(sort) ? 'id' : sort
     let query = Daberna.query()
     const isPg = isPG()
@@ -22,7 +23,9 @@ export default class DabernaController {
       .where(
         'created_at',
         '>',
-        DateTime.now().minus({ days: Helper.DABERNA_LOG_DAY_LIMIT }).toJSDate()
+        DateTime.now()
+          .minus({ hours: hourLimit ?? Helper.DABERNA_LOG_DAY_LIMIT * 24 })
+          .toJSDate()
       )
       .where('boards', 'like', `%id":${userId},%`)
     if (type) query.where('type', `d${type}`)
@@ -67,6 +70,43 @@ export default class DabernaController {
       return i
     })
 
+    //user app vitrin
+    if (hourLimit) {
+      const grouped = transformed.reduce((acc, item) => {
+        const { type, card_count, win_prize, row_win_prize } = item
+
+        if (!acc[type]) {
+          acc[type] = {
+            type,
+            card_count: 0,
+            win_prize: 0,
+            row_win_prize: 0,
+          }
+        }
+
+        acc[type].card_count += card_count
+        acc[type].win_prize += win_prize
+        acc[type].row_win_prize += row_win_prize
+
+        return acc
+      }, {})
+
+      const groupedArray = Object.values(grouped)
+      const formattedGroupedArray = groupedArray.map((group) => ({
+        ...group,
+        win_prize: asPrice(group.win_prize),
+        row_win_prize: asPrice(group.row_win_prize),
+      }))
+      const prize = groupedArray.reduce(
+        (total, group) => total + group.win_prize + group.row_win_prize,
+        0
+      )
+      return {
+        prize: asPrice(prize),
+        rooms: formattedGroupedArray,
+        title: i18n.t('messages.last_*_hours_log', { item: hourLimit }),
+      }
+    }
     // console.log(res.getMeta())
     // console.log(transformed)
     return response.json({ data: transformed, meta: res.getMeta() })
