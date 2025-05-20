@@ -290,9 +290,9 @@ export default class RoomController {
             message: i18n.t('messages.room_is_full'),
           })
         }
-        // userFinancials.balance -= totalPrice
-        userFinancials.balance -= (userBeforeCardCounts + cardCount) * room.cardPrice
-        // await userFinancials.useTransaction(trx).save()
+        userFinancials.balance -= totalPrice
+        // userFinancials.balance -= (userBeforeCardCounts + cardCount) * room.cardPrice
+        await userFinancials.useTransaction(trx).save()
         // await redis.sadd('in', user.id)
         switch (room.cardPrice) {
           case 5000:
