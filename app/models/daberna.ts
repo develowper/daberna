@@ -447,7 +447,7 @@ export default class Daberna extends BaseModel {
       const to = financial.balance - buy
       // await financial.save()
       updates.push({ user_id: user.id, balance: financial.balance })
-      l += `userId:${user.id}(${user.username}) buy ${buy} [${from}-${to}] \n`
+      l += `userId:${user.id}(${user.username}) buy ${buy} [${from}] \n`
       // await redis.srem('in', user.id)
     }
     if (false && updates.length) {
