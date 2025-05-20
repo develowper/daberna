@@ -102,6 +102,7 @@ export default class SettingController {
           '': appInfo.update_link,
         },
       },
+
       questions: [
         {
           q: 'وارد بازی نمی شوم',
