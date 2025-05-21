@@ -78,7 +78,7 @@ export default class SettingController {
       winwheel: JSON.parse(winWheel?.value),
       card_to_card: collect(cards).where('active', '1').random(),
       policy: policy,
-      support_messages: supportMessage,
+      support_message: supportMessage,
       charge_title: settings.first((item) => item.key == 'charge_title')?.value,
       card_to_card_title: settings.first((item) => item.key == 'card_to_card_title')?.value,
       withdraw_title: settings.first((item) => item.key == 'withdraw_title')?.value,
