@@ -745,6 +745,18 @@ class Helper {
         }),
         title: __('app_info'),
       },
+      {
+        key: 'support_message',
+        title: __('support_message'),
+        value: JSON.stringify({
+          title: '',
+          questions: [
+            { q: '', a: '', active: 0 },
+            { q: '', a: '', active: 0 },
+            { q: '', a: '', active: 0 },
+          ],
+        }),
+      },
       // {
       //   key: 'enamad',
       //   value: Helper.ENAMAD,

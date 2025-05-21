@@ -28,6 +28,7 @@ export default class SettingController {
         'header_message',
         'ads',
         'app_info',
+        'support_message',
       ])
     )
     const appInfo: any = JSON.parse(
@@ -41,6 +42,9 @@ export default class SettingController {
     )
     const headerMessages: any[] = JSON.parse(
       settings.first((item) => item.key === 'header_message')?.value ?? '[]'
+    )
+    const supportMessages: any[] = JSON.parse(
+      settings.first((item) => item.key === 'support_message')?.value ?? '{}'
     )
     const telegramBot = settings.first((item: any) => item && item.key == 'telegram_bot')?.value
     const supportTelegram = settings.first((item: any) => item && item.key == 'support_telegram')
@@ -74,6 +78,7 @@ export default class SettingController {
       winwheel: JSON.parse(winWheel?.value),
       card_to_card: collect(cards).where('active', '1').random(),
       policy: policy,
+      support_messages: supportMessages,
       charge_title: settings.first((item) => item.key == 'charge_title')?.value,
       card_to_card_title: settings.first((item) => item.key == 'card_to_card_title')?.value,
       withdraw_title: settings.first((item) => item.key == 'withdraw_title')?.value,

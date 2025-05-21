@@ -202,6 +202,7 @@
   "time": "زمان",
   "count": "تعداد",
   "pay_type": "نوع پرداخت",
+  "support_message": "پیام پشتیبانی",
   "return_to_application": "اپلیکیشن را بسته و مجدد باز نمایید",
   "return_to_site": "بازگشت به سایت",
   "request_registered_successfully": "درخواست شما با موفقیت ثبت شد",
