@@ -811,13 +811,13 @@ class Helper {
       },
     ])
     UserFinancial.createMany([
-      { id: 1, userId: 1, balance: 1000000 },
-      { id: 2, userId: 2, balance: 1000000 },
-      { id: 3, userId: 3, balance: 1000000 },
-      { id: 4, userId: 4, balance: 1000000 },
-      { id: 5, userId: 5, balance: 1000000 },
-      { id: 6, userId: 6, balance: 1000000 },
-      { id: 7, userId: 7, balance: 1000000 },
+      { userId: 1, balance: 1000000 },
+      { userId: 2, balance: 1000000 },
+      { userId: 3, balance: 1000000 },
+      { userId: 4, balance: 1000000 },
+      { userId: 5, balance: 1000000 },
+      { userId: 6, balance: 1000000 },
+      { userId: 7, balance: 1000000 },
     ])
 
     //fake user

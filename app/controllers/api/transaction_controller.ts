@@ -304,9 +304,9 @@ export default class TransactionsController {
         if (financial.balance < amount) {
           return response.status(Helper.ERROR_STATUS).json({
             status: 'danger',
-            message: __('messages.validate.max', {
+            message: __('validate.max', {
               item: __('amount'),
-              value: `${Helper.asPrice(`${amount}`)} ${__('currency')}`,
+              value: `${Helper.asPrice(`${financial.balance}`)} ${__('currency')}`,
             }),
           })
         }

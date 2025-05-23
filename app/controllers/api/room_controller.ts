@@ -342,7 +342,7 @@ export default class RoomController {
       })
     } catch (error) {
       await trx.rollback()
-      return response.status(500).json({ message: 'Transaction failed', error })
+      return response.status(422).json({ message: error.message || error.toString(), error })
     }
   }
 }
