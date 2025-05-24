@@ -361,7 +361,10 @@ export default class RoomController {
           card_count: room.cardCount,
         })
 
-        return response.json({ user_balance: userFinancials.balance, players: room.players /* p*/ })
+        return response.json({
+          user_balance: userFinancials.balance - debit,
+          players: room.players /* p*/,
+        })
       }
 
       await trx.rollback()

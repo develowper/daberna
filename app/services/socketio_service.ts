@@ -278,7 +278,7 @@ export default class SocketIo {
           }
         }
         // clearInterval(SocketIo.timer)
-      }, 3000)
+      }, 4000)
 
       //timer dooz
       SocketIo.timer2 = setInterval(async () => {

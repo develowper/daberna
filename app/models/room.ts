@@ -202,7 +202,7 @@ export default class Room extends BaseModel {
     const parsed: any = JSON.parse(this.players) ?? []
     const beforeExists = collect(parsed).first((item: any) => item.user_id == user.id)
 
-    const lockAcquired = await redis.set(this.lockKey, '1', 'PX', 100, 'NX')
+    const lockAcquired = await redis.set(this.lockKey, '1', 'PX', 200, 'NX')
     if (!lockAcquired) return false // Lock already exists, skip
     if (
       !(await this.redisAddPlayer(
