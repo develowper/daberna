@@ -9,6 +9,8 @@ import app from '@adonisjs/core/services/app'
 import Daberna from '#models/daberna'
 import redis from '@adonisjs/redis/services/main'
 import Telegram from '#services/telegram_service'
+import db from '@adonisjs/lucid/services/db'
+import { TransactionClient } from '@adonisjs/lucid/build/src/transaction_client/index.js'
 
 // import { HttpContext } from '@adonisjs/http-server/build/standalone'
 // @inject()
@@ -194,7 +196,12 @@ export default class Room extends BaseModel {
     }
     return game
   }
-  public async setUserCardsCount(count: number, us: User | null = null, ip: any) {
+  public async setUserCardsCount(
+    count: number,
+    us: User | null = null,
+    ip: any,
+    trx: TransactionClient
+  ) {
     const user = us ?? this.auth?.user
     if (!user) return false
     let res: any[] = []
@@ -287,82 +294,92 @@ export default class Room extends BaseModel {
   }
 
   public static async addBot(
-    room: Room,
+    roomData: Room,
     user: User | null = null,
     userCardCount: number | null = null
   ) {
-    if (!room.isActive) return
-    const players = JSON.parse(room.players ?? '[]')
-    const beforeIds = collect(players).pluck('user_id').toArray()
-
-    const botUser =
-      user ??
-      (await User.query()
-        .whereNotIn('id', beforeIds)
-        .where('is_active', true)
-        .where('role', 'bo')
-        .orderByRaw('RAND()')
+    if (!roomData.isActive) return
+    await db.transaction(async (trx) => {
+      const room: Room = await Room.query({ client: trx })
+        .where('id', roomData.id)
         .forUpdate()
-        .first())
+        .first()
+      if (!room) return
+      const players = room.players
+      const beforeIds = collect(players)
+        .pluck('user_id')
+        .map((i) => `${i}`)
+        .toArray()
 
-    if (!botUser /*|| beforeIds.includes(user?.id)*/) return
-    let cardCount = userCardCount ?? [1, 2, 3][Math.floor(Math.random() * 3)]
-    if (room.maxCardsCount - room.cardCount <= 0) return
-    if (room.maxCardsCount - room.cardCount <= 3)
-      cardCount = userCardCount ?? room.maxCardsCount - room.cardCount
-    if (await room.setUserCardsCount(cardCount, botUser, null)) {
-      room.playerCount++
-      botUser.playCount++
-      room.cardCount += cardCount
-      // room.playerCount = JSON.parse(room.players ?? '[]').length
-      if (
-        room.playerCount == 2 /* ||
+      const botUser =
+        user ??
+        (await User.query({ client: trx })
+          .whereNotIn('id', beforeIds)
+          .where('is_active', true)
+          .where('role', 'bo')
+          .orderByRaw('RAND()')
+          .first())
+
+      if (!botUser /*|| beforeIds.includes(user?.id)*/) return
+      let cardCount = userCardCount ?? [1, 2, 3][Math.floor(Math.random() * 3)]
+      if (room.maxCardsCount - room.cardCount <= 0) return
+      if (room.maxCardsCount - room.cardCount <= 3)
+        cardCount = userCardCount ?? room.maxCardsCount - room.cardCount
+
+      if (await room.setUserCardsCount(cardCount, botUser, null, trx)) {
+        room.playerCount++
+        botUser.playCount++
+        room.cardCount += cardCount
+        // room.playerCount = JSON.parse(room.players ?? '[]').length
+        if (
+          room.playerCount == 2 /* ||
         (room.playerCount >= 2 && room.secondsRemaining == room.maxSeconds)*/
-      )
-        room.startAt = DateTime.now().plus({ seconds: room.maxSeconds - 1 })
+        )
+          room.startAt = DateTime.now().plus({ seconds: room.maxSeconds - 1 })
 
-      await room.save()
-      switch (room.cardPrice) {
-        case 5000:
-          botUser.card5000Count += cardCount
-          botUser.todayCard5000Count += cardCount
-          break
-        case 10000:
-          botUser.card10000Count += cardCount
-          botUser.todayCard10000Count += cardCount
-          break
-        case 20000:
-          botUser.card20000Count += cardCount
-          botUser.todayCard20000Count += cardCount
-          break
-        case 50000:
-          botUser.card50000Count += cardCount
-          botUser.todayCard50000Count += cardCount
-          break
+        await room.useTransaction(trx).save()
+        switch (room.cardPrice) {
+          case 5000:
+            botUser.card5000Count += cardCount
+            botUser.todayCard5000Count += cardCount
+            break
+          case 10000:
+            botUser.card10000Count += cardCount
+            botUser.todayCard10000Count += cardCount
+            break
+          case 20000:
+            botUser.card20000Count += cardCount
+            botUser.todayCard20000Count += cardCount
+            break
+          case 50000:
+            botUser.card50000Count += cardCount
+            botUser.todayCard50000Count += cardCount
+            break
+        }
+
+        await botUser.useTransaction(trx).save()
+        // console.log('*************')
+        // console.log(room.type)
+        // console.log(room.cardCount)
+        // console.log(room.secondsRemaining)
+        // console.log(room.players)
+        const data = {
+          type: room.type,
+          cmnd: 'card-added',
+          players: room.players,
+          game_id: room.clearCount,
+          card_count: room.cardCount,
+          player_count: room.playerCount,
+          start_with_me: room.startWithMe,
+          seconds_remaining: room.playerCount > 1 ? room.secondsRemaining : room.maxSeconds,
+          user_id: botUser?.id,
+          username: botUser?.username,
+          user_card_count: cardCount,
+        }
+        emitter.emit('room-update', data)
+
+        // await Daberna.startRooms([room])
       }
-
-      await botUser.save()
-      // console.log('*************')
-      // console.log(room.type)
-      // console.log(room.cardCount)
-      // console.log(room.secondsRemaining)
-      // console.log(room.players)
-
-      emitter.emit('room-update', {
-        type: room.type,
-        cmnd: 'card-added',
-        players: room.players,
-        game_id: room.clearCount,
-        card_count: room.cardCount,
-        player_count: room.playerCount,
-        start_with_me: room.startWithMe,
-        seconds_remaining: room.playerCount > 1 ? room.secondsRemaining : room.maxSeconds,
-        user_id: botUser?.id,
-        username: botUser?.username,
-        user_card_count: cardCount,
-        card_count: room.cardCount,
-      })
-      // await Daberna.startRooms([room])
-    }
+    })
   }
 }

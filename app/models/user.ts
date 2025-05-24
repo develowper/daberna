@@ -35,9 +35,9 @@ export default class User extends compose(BaseModel, AuthFinder) {
 
   public async getUserFinancial() {
     const financial = await UserFinancial.firstOrCreate({ userId: this?.id }, { balance: 0 })
-    const val = await redis.get(`b${this.id}`)
-    const debit = !Number.isNaN(Number(val)) ? Number(val) : 0
-    financial.balance = (financial?.balance ?? 0) - debit
+    // const val = await redis.get(`b${this.id}`)
+    // const debit = !Number.isNaN(Number(val)) ? Number(val) : 0
+    // financial.balance = (financial?.balance ?? 0) - debit
     return financial?.serialize() ?? {}
   }
 

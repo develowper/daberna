@@ -274,8 +274,8 @@ export default class RoomController {
       )
       const totalPrice = room.cardPrice * cardCount
 
-      const val = await redis.get(`b${user.id}`)
-      const debit = !Number.isNaN(Number(val)) ? Number(val) : 0
+      // const val = await redis.get(`b${user.id}`)
+      const debit = 0 /*!Number.isNaN(Number(val)) ? Number(val) : 0*/
 
       if (userFinancials.balance - debit < totalPrice) {
         await trx.rollback()
@@ -287,7 +287,7 @@ export default class RoomController {
         })
       }
 
-      if (await room.setUserCardsCount(userBeforeCardCounts + cardCount, user, ip)) {
+      if (await room.setUserCardsCount(userBeforeCardCounts + cardCount, user, ip, trx)) {
         if (userBeforeCardCounts === 0) {
           room.playerCount = room.playerCount + 1 /*await redis.hlen(room.type)*/
           user.playCount++
@@ -311,9 +311,9 @@ export default class RoomController {
             message: i18n.t('messages.room_is_full'),
           })
         }
-        userFinancials.balance -= (userBeforeCardCounts + cardCount) * room.cardPrice
-        // userFinancials.balance -= totalPrice
-        // await userFinancials.useTransaction(trx).save()
+        // userFinancials.balance -= (userBeforeCardCounts + cardCount) * room.cardPrice
+        userFinancials.balance -= totalPrice
+        await userFinancials.useTransaction(trx).save()
         // await redis.sadd('in', user.id)
         switch (room.cardPrice) {
           case 5000:
@@ -338,12 +338,12 @@ export default class RoomController {
 
         await trx.commit()
 
-        await redis.set(`b${user.id}`, String(debit + totalPrice), 'EX', 90)
-        try {
-          await redis.expire(`b${user.id}`, 90)
-        } catch (err) {
-          console.error('Redis set failed:', err)
-        }
+        // await redis.set(`b${user.id}`, String(debit + totalPrice), 'EX', 90)
+        // try {
+        //   await redis.expire(`b${user.id}`, 90)
+        // } catch (err) {
+        //   console.error('Redis set failed:', err)
+        // }
         // const pAll = await redis.hgetall(room.type)
         // await redis.sadd(`in${room.type}`, `${user?.id}`)
         // console.log(

@@ -448,17 +448,18 @@ export default class Daberna extends BaseModel {
       // await financial.save()
       updates.push({ user_id: user.id, balance: financial.balance })
       //redis decrement temp debit for this game
-      const val = await redis.get(`b${user.id}`)
-      let debit = (!Number.isNaN(Number(val)) ? Number(val) : 0) - buy
-      await redis.set(`b${user.id}`, debit < 0 ? 0 : debit)
-      const ttl = await redis.ttl(`b${user.id}`)
-      l += `userId:${user.id}(${user.username}) buy:${buy} [${from}-${to}] debit:${debit} ttl:(${ttl}) \n`
+      // const val = await redis.get(`b${user.id}`)
+      // let debit = (!Number.isNaN(Number(val)) ? Number(val) : 0) - buy
+      // await redis.set(`b${user.id}`, debit < 0 ? 0 : debit)
+      // const ttl = await redis.ttl(`b${user.id}`)
+      // l += `userId:${user.id}(${user.username}) buy:${buy} [${from}-${to}] debit:${debit} ttl:(${ttl}) \n`
+      l += `userId:${user.id}(${user.username}) buy:${buy} [${from}-${to}] \n`
     }
     // await redis.del(`in${room.type}`)
 
     // console.log(`clear (${room.type}) redis:`, await redis.smembers(`in${room.type}`))
 
-    if (updates.length) {
+    if (false && updates.length) {
       await db.rawQuery(`
       UPDATE user_financials
       SET balance = CASE user_id
