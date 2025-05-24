@@ -203,6 +203,14 @@ export default class RoomController {
           message: i18n.t('messages.we_are_updating'),
         })
       }
+
+      if (!user.telegramId) {
+        await trx.rollback()
+        return response.status(422).json({
+          message: i18n.t('messages.connect_telegram_is_required'),
+        })
+      }
+
       const room = await Room.query({ client: trx })
         .where('is_active', true)
         .where('type', roomType)
