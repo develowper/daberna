@@ -330,7 +330,7 @@ export default class RoomController {
         await redis.sadd(`in${room.type}`, `${user?.id}`)
         console.log(
           `add redis ${user?.id} (${room.type}) :`,
-          await redis.smembers(`in${room.type}}`)
+          await redis.smembers(`in${room.type}`)
         )
 
         // const p = JSON.stringify(Object.values(pAll).map((v) => JSON.parse(v)))
