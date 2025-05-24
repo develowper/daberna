@@ -12,6 +12,7 @@ import Helper, { range, replace, startsWith } from '#services/helper_service'
 import { fakerFA as faker } from '@faker-js/faker'
 import Transaction from '#models/transaction'
 import Telegram from '#services/telegram_service'
+import redis from '@adonisjs/redis/services/main'
 
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   uids: ['username'],
@@ -33,7 +34,11 @@ export default class User extends compose(BaseModel, AuthFinder) {
   public balance: number
 
   public async getUserFinancial() {
-    return (await UserFinancial.findBy('user_id', this.id))?.serialize()
+    const financial = await UserFinancial.firstOrCreate({ userId: this?.id }, { balance: 0 })
+    const val = await redis.get(`b${this.id}`)
+    const debit = !Number.isNaN(Number(val)) ? Number(val) : 0
+    financial.balance = (financial?.balance ?? 0) - debit
+    return financial?.serialize() ?? {}
   }
 
   @column({ isPrimary: true })
