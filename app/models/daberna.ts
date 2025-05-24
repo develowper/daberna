@@ -449,8 +449,9 @@ export default class Daberna extends BaseModel {
       updates.push({ user_id: user.id, balance: financial.balance })
       //redis decrement temp debit for this game
       const val = await redis.get(`b${user.id}`)
-      const debit = (!Number.isNaN(Number(val)) ? Number(val) : 0) - buy
-      await redis.set(`b${user.id}`, debit < 0 ? 0 : debit)
+      let debit = (!Number.isNaN(Number(val)) ? Number(val) : 0) - buy
+      debit = debit < 0 ? 0 : debit
+      await redis.set(`b${user.id}`, debit)
 
       l += `userId:${user.id}(${user.username}) buy:${buy} [${from}-${to}] debit:${debit} \n`
     }
