@@ -12,7 +12,13 @@
   >
     <div v-if="label" class="text-sm text-gray-700">{{ label }}</div>
 
-    <slot name="selector" :selectedText="selectedText" :selectedItem="selectedItem" :clear="clear">
+    <slot
+      name="selector"
+      :selectedText="selectedText"
+      :selectedItem="selectedItem"
+      :clear="clear"
+      :getData="getData"
+    >
     </slot>
     <InputError class="mt-1" :message="error" />
   </div>
@@ -261,6 +267,7 @@ export default {
     'multi',
     'editable',
     'where',
+    'preFetch',
   ],
   components: {
     ChevronDownIcon,
@@ -304,7 +311,7 @@ export default {
     const modalEl = document.getElementById(`modalUsers-${this.id}`)
     this.Modal = new Modal(modalEl)
 
-    this.getData()
+    if (this.preFetch) this.getData()
     if (this.preload && this.preload.id) {
       this.selectItem(this.preload)
     }

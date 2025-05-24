@@ -448,7 +448,8 @@ export default class Daberna extends BaseModel {
       // await financial.save()
       updates.push({ user_id: user.id, balance: financial.balance })
       l += `userId:${user.id}(${user.username}) buy ${buy} [${from}-${to}] \n`
-      // await redis.srem('in', user.id)
+      await redis.srem('in', `${user.id}`)
+      console.log('removing:', redis.keys('in'))
     }
     if (updates.length) {
       await db.rawQuery(`
@@ -605,6 +606,7 @@ export default class Daberna extends BaseModel {
     room.players = null
     room.startAt = null
     // room.starterId = null
+
     room.isActive = true
     await room.save()
     // console.timeEnd('makeGame')

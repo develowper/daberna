@@ -82,6 +82,7 @@ export default () => {
           router.get('log/index', [LogController, 'index']).as('log.index')
 
           router.get('daberna/search', [DabernaController, 'search']).as('daberna.search')
+          router.get('daberna/index', [DabernaController, 'index']).as('daberna.index')
         })
         .prefix('panel')
         .as('panel')

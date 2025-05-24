@@ -474,6 +474,7 @@
                   >
                     <template v-slot:selector="props">
                       <div
+                        @click="props.getData()"
                         :class="props.selectedText ? 'py-2' : 'py-2'"
                         class="px-4 border border-gray-200 rounded-lg hover:bg-gray-100 cursor-pointer flex items-center"
                       >

@@ -1,5 +1,5 @@
 // import type { HttpContext } from '@adonisjs/core/http'
-import Helper, {isPG} from '#services/helper_service'
+import Helper, { isPG } from '#services/helper_service'
 import { HttpContext } from '@adonisjs/core/http'
 import Daberna from '#models/daberna'
 
@@ -58,5 +58,8 @@ export default class DabernaController {
     })
 
     return response.json({ data: transformed, meta: res.getMeta() })
+  }
+  async index({ request, inertia }: HttpContext) {
+    return inertia.render('Panel/Admin/Daberna/Index', {})
   }
 }
