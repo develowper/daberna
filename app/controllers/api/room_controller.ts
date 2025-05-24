@@ -215,7 +215,7 @@ export default class RoomController {
           message: i18n.t('messages.check_network_and_retry'),
         })
       }
-
+      /*
       const isInOthers = (
         await Promise.all(
           ['ind5000', 'ind10000', 'ind20000', 'ind50000']
@@ -232,7 +232,7 @@ export default class RoomController {
           message: i18n.t('messages.cant_be_in_two_room'),
         })
       }
-
+*/
       const userBeforeCardCounts = await room.getUserCardCount()
 
       if (userBeforeCardCounts + cardCount > room.maxUserCardsCount) {
@@ -266,7 +266,10 @@ export default class RoomController {
       )
       const totalPrice = room.cardPrice * cardCount
 
-      if (userFinancials.balance < totalPrice) {
+      const val = await redis.get(`b${user.id}`)
+      const debit = !Number.isNaN(Number(val)) ? Number(val) : 0
+
+      if (userFinancials.balance - debit < totalPrice) {
         await trx.rollback()
         return response.status(400).json({
           message: i18n.t('messages.validate.min', {
@@ -326,8 +329,10 @@ export default class RoomController {
         await user.useTransaction(trx).save()
 
         await trx.commit()
+
+        await redis.set(`b${user.id}`, debit + totalPrice, 'EX', 90)
         // const pAll = await redis.hgetall(room.type)
-        await redis.sadd(`in${room.type}`, `${user?.id}`)
+        // await redis.sadd(`in${room.type}`, `${user?.id}`)
         // console.log(
         //   `add redis ${user?.id} (${room.type}) :`,
         //   await redis.smembers(`in${room.type}`)
