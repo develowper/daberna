@@ -127,6 +127,8 @@ export default class BotController {
                 null,
                 await this.getKeyboard('user_main')
               )
+              msg = `🟢  کاربر [${username ?? '👤'}](tg://user?id=${fromId}) متصل شد`
+              Telegram.logAdmins(Telegram.markdownV2(msg), this.MODE_MARKDOWN)
             }
           } else {
             await Referral.add(fromId, cmnd)
