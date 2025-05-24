@@ -204,12 +204,12 @@ export default class RoomController {
         })
       }
 
-      if (!user.telegramId) {
-        await trx.rollback()
-        return response.status(422).json({
-          message: i18n.t('messages.connect_telegram_is_required'),
-        })
-      }
+      // if (!user.telegramId) {
+      //   await trx.rollback()
+      //   return response.status(422).json({
+      //     message: i18n.t('messages.connect_telegram_is_required'),
+      //   })
+      // }
 
       const room = await Room.query({ client: trx })
         .where('is_active', true)
