@@ -327,7 +327,7 @@ export default class RoomController {
 
         await trx.commit()
         // const pAll = await redis.hgetall(room.type)
-        await redis.sadd(`in${room.type}}`, `${user?.id}`)
+        await redis.sadd(`in${room.type}`, `${user?.id}`)
 
         // const p = JSON.stringify(Object.values(pAll).map((v) => JSON.parse(v)))
         // console.log(p)
