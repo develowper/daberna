@@ -450,7 +450,7 @@ export default class Daberna extends BaseModel {
       l += `userId:${user.id}(${user.username}) buy ${buy} [${from}-${to}] \n`
     }
     await redis.del(`in${room.type}`)
-    console.log(`clear (${room.type}) redis:`, await redis.smembers(`in${room.type}`))
+    // console.log(`clear (${room.type}) redis:`, await redis.smembers(`in${room.type}`))
 
     if (updates.length) {
       await db.rawQuery(`

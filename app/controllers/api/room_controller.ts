@@ -224,13 +224,13 @@ export default class RoomController {
         )
       ).some(Boolean)
 
-      console.log(`members ${roomType} redis:`, await redis.smembers(`in${room.type}`))
+      // console.log(`members ${roomType} redis:`, await redis.smembers(`in${room.type}`))
       if (isInOthers) {
-        console.log(`${user.id} (${roomType}) is in other redis queue`)
-        // await trx.rollback()
-        // return response.status(400).json({
-        //   message: i18n.t('messages.cant_be_in_two_room'),
-        // })
+        // console.log(`${user.id} (${roomType}) is in other redis queue`)
+        await trx.rollback()
+        return response.status(400).json({
+          message: i18n.t('messages.cant_be_in_two_room'),
+        })
       }
 
       const userBeforeCardCounts = await room.getUserCardCount()
@@ -328,10 +328,10 @@ export default class RoomController {
         await trx.commit()
         // const pAll = await redis.hgetall(room.type)
         await redis.sadd(`in${room.type}`, `${user?.id}`)
-        console.log(
-          `add redis ${user?.id} (${room.type}) :`,
-          await redis.smembers(`in${room.type}`)
-        )
+        // console.log(
+        //   `add redis ${user?.id} (${room.type}) :`,
+        //   await redis.smembers(`in${room.type}`)
+        // )
 
         // const p = JSON.stringify(Object.values(pAll).map((v) => JSON.parse(v)))
         // console.log(p)
