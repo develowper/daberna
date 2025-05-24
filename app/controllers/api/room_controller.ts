@@ -224,7 +224,7 @@ export default class RoomController {
         )
       ).some(Boolean)
 
-      console.log(`members ${roomType} redis:`, await redis.smembers(`in${room.type}}`))
+      console.log(`members ${roomType} redis:`, await redis.smembers(`in${room.type}`))
       if (isInOthers) {
         console.log(`${user.id} (${roomType}) is in other redis queue`)
         // await trx.rollback()
