@@ -216,9 +216,17 @@ export default class RoomController {
         })
       }
 
-      console.log('members redis:', await redis.smembers('in'))
-      if (await redis.sismember('in', `${user.id}`)) {
-        console.log(`${user.id} (${room.type}) is in redis queue`)
+      const isInOthers = (
+        await Promise.all(
+          ['ind5000', 'ind10000', 'ind20000', 'ind50000']
+            .filter((k) => k !== `in${roomType}`)
+            .map((k) => redis.sismember(k, `${user.id}`))
+        )
+      ).some(Boolean)
+
+      console.log(`members ${roomType} redis:`, await redis.smembers(`in${room.type}}`))
+      if (isInOthers) {
+        console.log(`${user.id} (${roomType}) is in other redis queue`)
         // await trx.rollback()
         // return response.status(400).json({
         //   message: i18n.t('messages.cant_be_in_two_room'),
@@ -319,7 +327,7 @@ export default class RoomController {
 
         await trx.commit()
         // const pAll = await redis.hgetall(room.type)
-        await redis.sadd('in', `${user?.id}`)
+        await redis.sadd(`in${room.type}}`, `${user?.id}`)
 
         // const p = JSON.stringify(Object.values(pAll).map((v) => JSON.parse(v)))
         // console.log(p)
