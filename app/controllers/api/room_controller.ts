@@ -218,7 +218,7 @@ export default class RoomController {
 
       console.log('members redis:', await redis.smembers('in'))
       if (await redis.sismember('in', `${user.id}`)) {
-        console.log(`${user.id} is in redis queue`)
+        console.log(`${user.id} (${room.type}) is in redis queue`)
         // await trx.rollback()
         // return response.status(400).json({
         //   message: i18n.t('messages.cant_be_in_two_room'),
