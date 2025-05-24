@@ -453,7 +453,7 @@ export default class Daberna extends BaseModel {
       // await redis.set(`b${user.id}`, debit < 0 ? 0 : debit)
       // const ttl = await redis.ttl(`b${user.id}`)
       // l += `userId:${user.id}(${user.username}) buy:${buy} [${from}-${to}] debit:${debit} ttl:(${ttl}) \n`
-      l += `userId:${user.id}(${user.username}) buy:${buy} [${from}-${to}] \n`
+      l += `userId:${user.id}(${user.username}) buy:${buy} [${from}] \n`
     }
     // await redis.del(`in${room.type}`)
 
