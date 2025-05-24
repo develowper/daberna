@@ -449,7 +449,7 @@ export default class Daberna extends BaseModel {
       updates.push({ user_id: user.id, balance: financial.balance })
       l += `userId:${user.id}(${user.username}) buy ${buy} [${from}-${to}] \n`
       await redis.srem('in', `${user.id}`)
-      console.log('removing:', redis.keys('in'))
+      console.log('removing:', await redis.keys('in'))
     }
     if (updates.length) {
       await db.rawQuery(`

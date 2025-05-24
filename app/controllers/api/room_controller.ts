@@ -216,7 +216,7 @@ export default class RoomController {
         })
       }
 
-      console.log('keys:', redis.keys('in'))
+      console.log('keys:', await redis.keys('in'))
       if (await redis.sismember('in', `${user.id}`)) {
         console.log(`${user.id} is in before`)
         // await trx.rollback()
