@@ -338,7 +338,12 @@ export default class RoomController {
 
         await trx.commit()
 
-        await redis.set(`b${user.id}`, debit + totalPrice, 'EX', 90)
+        await redis.set(`b${user.id}`, String(debit + totalPrice), 'EX', 90)
+        try {
+          await redis.expire(`b${user.id}`, 90)
+        } catch (err) {
+          console.error('Redis set failed:', err)
+        }
         // const pAll = await redis.hgetall(room.type)
         // await redis.sadd(`in${room.type}`, `${user?.id}`)
         // console.log(
