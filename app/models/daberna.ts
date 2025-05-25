@@ -433,28 +433,27 @@ export default class Daberna extends BaseModel {
     //now decrease card prices from user for safety
 
     let l = `gameId:${game.id}\n`
-    const c = users.where('role', 'us').count()
     const updates = []
-    // console.time(`updateBalances ${room.type} ${c}`) // Start timer
-    for (const user of users.where('role', 'us')) {
-      const financial = user.financial ?? (await user.related('financial').create({ balance: 0 }))
-      const p: any = collect(players).where('user_id', user.id).first()
-      // console.log('find', user.id)
-      if (!p) continue
-      const from = financial.balance
-      const buy = Number.parseInt(`${p.card_count ?? 0}`) * room.cardPrice
-      financial.balance -= buy
-      const to = financial.balance
-      // await financial.save()
-      updates.push({ user_id: user.id, balance: financial.balance })
-      //redis decrement temp debit for this game
-      // const val = await redis.get(`b${user.id}`)
-      // let debit = (!Number.isNaN(Number(val)) ? Number(val) : 0) - buy
-      // await redis.set(`b${user.id}`, debit < 0 ? 0 : debit,'KEEPTTL')
-      // const ttl = await redis.ttl(`b${user.id}`)
-      // l += `userId:${user.id}(${user.username}) buy:${buy} [${from}-${to}] debit:${debit} ttl:(${ttl}) \n`
-      l += `userId:${user.id}(${user.username}) buy:${buy} [${from}] \n`
-    }
+    if (false)
+      for (const user of users.where('role', 'us')) {
+        const financial = user.financial ?? (await user.related('financial').create({ balance: 0 }))
+        const p: any = collect(players).where('user_id', user.id).first()
+        // console.log('find', user.id)
+        if (!p) continue
+        const from = financial.balance
+        const buy = Number.parseInt(`${p.card_count ?? 0}`) * room.cardPrice
+        financial.balance -= buy
+        const to = financial.balance
+        // await financial.save()
+        updates.push({ user_id: user.id, balance: financial.balance })
+        //redis decrement temp debit for this game
+        // const val = await redis.get(`b${user.id}`)
+        // let debit = (!Number.isNaN(Number(val)) ? Number(val) : 0) - buy
+        // await redis.set(`b${user.id}`, debit < 0 ? 0 : debit,'KEEPTTL')
+        // const ttl = await redis.ttl(`b${user.id}`)
+        // l += `userId:${user.id}(${user.username}) buy:${buy} [${from}-${to}] debit:${debit} ttl:(${ttl}) \n`
+        l += `userId:${user.id}(${user.username}) buy:${buy} [${from}] \n`
+      }
     // await redis.del(`in${room.type}`)
 
     // console.log(`clear (${room.type}) redis:`, await redis.smembers(`in${room.type}`))
@@ -470,8 +469,6 @@ export default class Daberna extends BaseModel {
     }
     // console.timeEnd(`updateBalances ${room.type} ${c}`) // End timer and print duration
     // console.log(users.where('role', 'us').count(), l)
-    if (logText != '')
-      Telegram.logAdmins(`${logText}\n ${l}`, null, null ?? Helper.TELEGRAM_TOPICS.DABERNA_GAME)
     //*****
 
     // console.log(boards.map((item) => item.card))
@@ -608,6 +605,20 @@ export default class Daberna extends BaseModel {
     // await Setting.query()
     //   .where('key', 'blacklist')
     //   .update({ value: blackList.join('\n') })
+
+    for (const user of users.where('role', 'us')) {
+      const financial = user.financial ?? (await user.related('financial').create({ balance: 0 }))
+      const p: any = collect(players).where('user_id', user.id).first()
+      if (!p) continue
+      const from = financial.balance
+      const buy = Number.parseInt(`${p.card_count ?? 0}`) * room.cardPrice
+      // financial.balance -= buy
+      // const to = financial.balance
+      updates.push({ user_id: user.id, balance: financial.balance })
+      l += `userId:${user.id}(${user.username}) buy:${buy} [${from}] \n`
+    }
+    if (logText != '')
+      Telegram.logAdmins(`${logText}\n ${l}`, null, null ?? Helper.TELEGRAM_TOPICS.DABERNA_GAME)
 
     room.playerCount = 0
     room.cardCount = 0
