@@ -7,7 +7,7 @@ const DabernaController = (await import('#controllers/admin/daberna_controller')
 import { middleware } from '#start/kernel'
 import Daberna from '#models/daberna'
 import Room from '#models/room'
-import Helper, { __, asPrice, replace, startsWith } from '#services/helper_service'
+import Helper, { __, asPrice, replace, sleep, startsWith } from '#services/helper_service'
 import Transaction from '#models/transaction'
 import Setting from '../../app/models/setting.js'
 import User from '../../app/models/user.js'
@@ -20,8 +20,18 @@ import vine from '@vinejs/vine'
 import Telegram from '#services/telegram_service'
 import collect from 'collect.js'
 import env from '#start/env'
+import { af } from '@faker-js/faker/dist/airline-BnpeTvY9.js'
+import redis from '@adonisjs/redis/services/main'
 export default function () {
   router.get('test', async () => {
+
+    await redis.set('testKey', 'testValue', 'EX', 90)
+    await sleep(2000)
+    await redis.expire('testKey', 90)
+    await sleep(2000)
+
+    return await redis.ttl('testKey')
+
     return
     return collect(JSON.parse((await Setting.findBy({ key: 'gateways' }))?.value ?? '[]'))
       .where('key', 'ZARINPAL')
