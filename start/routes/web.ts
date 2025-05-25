@@ -24,7 +24,7 @@ import { af } from '@faker-js/faker/dist/airline-BnpeTvY9.js'
 import redis from '@adonisjs/redis/services/main'
 export default function () {
   router.get('test', async () => {
-
+    return
     await redis.set('testKey', 'testValue', 'EX', 90)
     await sleep(2000)
     await redis.expire('testKey', 90)
