@@ -104,7 +104,10 @@ export default class DailyReport extends BaseCommand {
     const agencyIds = await Agency.query().select('id')
     const agencyTypes = agencyIds.map((agency) => `a_${agency.id}`)
 
-    const types = [...Helper.ROOMS.map((item) => item.type), ...agencyTypes]
+    const types = [
+      ...Helper.ROOMS.filter((i) => i.game == 'daberna').map((item) => item.type),
+      ...agencyTypes,
+    ]
 
     msg += '                📊 آمار امروز' + '\n'
     msg += '👤 کاربران جدید: ' + (uc[0]?.$extras.total ?? 0) + '\n'

@@ -462,7 +462,10 @@ export default class BotController {
           const agencyIds = await Agency.query().select('id')
           const agencyTypes = agencyIds.map((agency) => `a_${agency.id}`)
 
-          const types = [...Helper.ROOMS.map((item) => item.type), ...agencyTypes]
+          const types = [
+            ...Helper.ROOMS.filter((i) => i.game == 'daberna').map((item) => item.type),
+            ...agencyTypes,
+          ]
 
           msg += (await Log.roomsTable(types)) + '\n'
           msg += '🅿🅰🆁🅸🆂' + '\n'
