@@ -43,15 +43,15 @@ export default class SettingController {
     lottery.seconds_remaining = 0
     if (lottery?.active == 1) {
       const inputTime = lottery.start_at
-      console.log(inputTime)
-      let [hour, minute] = inputTime.split(':').map(Number)
+      let [hour, minute] = inputTime.split(':').map((i) => Number(i))
       if (hour === 24) {
         hour = 0
       }
       console.log(hour, minute)
       const now = DateTime.now().setZone('Asia/Tehran')
       let target = now.set({ hour, minute, second: 0, millisecond: 0 })
-      let secondsRemaining = target.diff(now, 'seconds').seconds
+      let secondsRemaining = now.diff(target, 'seconds').seconds
+      secondsRemaining = Math.round(secondsRemaining < 0 ? 0 : secondsRemaining)
       console.log('seconds', secondsRemaining)
 
       lottery.seconds_remaining = secondsRemaining
