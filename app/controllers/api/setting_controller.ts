@@ -41,14 +41,17 @@ export default class SettingController {
 
     const lottery: any = JSON.parse(settings.first((item) => item.key === 'lottery')?.value ?? '[]')
     lottery.seconds_remaining = 0
-    if (`${lottery?.active}` == '1') {
+    if (lottery?.active == 1) {
       const inputTime = lottery.start_at
+      console.log(inputTime)
       let [hour, minute] = inputTime.split(':').map(Number)
       if (hour === 24) {
         hour = 0
       }
+      console.log(hour, minute)
       const now = DateTime.now().setZone('Asia/Tehran')
       let target = now.set({ hour, minute, second: 0, millisecond: 0 })
+      console.log('target', target, target > now)
       let secondsRemaining = 0
       if (target > now) {
         secondsRemaining = target.diff(now, 'seconds').seconds
