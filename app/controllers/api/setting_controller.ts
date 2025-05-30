@@ -39,22 +39,22 @@ export default class SettingController {
     appInfo.version = Number(appInfo.version)
     // const ads: any = JSON.parse(settings.first((item) => item.key === 'ads')?.value ?? '[]')
 
-    // const lottery: any = JSON.parse(settings.first((item) => item.key === 'lottery')?.value ?? '[]')
-    // lottery.seconds_remaining = 0
-    // if (`${lottery?.active}` == '1') {
-    //   const inputTime = lottery.start_at
-    //   let [hour, minute] = inputTime.split(':').map(Number)
-    //   if (hour === 24) {
-    //     hour = 0
-    //   }
-    //   const now = DateTime.now().setZone('Asia/Tehran')
-    //   let target = now.set({ hour, minute, second: 0, millisecond: 0 })
-    //   let secondsRemaining = 0
-    //   if (target > now) {
-    //     secondsRemaining = target.diff(now, 'seconds').seconds
-    //   }
-    //   lottery.seconds_remaining = secondsRemaining
-    // }
+    const lottery: any = JSON.parse(settings.first((item) => item.key === 'lottery')?.value ?? '[]')
+    lottery.seconds_remaining = 0
+    if (`${lottery?.active}` == '1') {
+      const inputTime = lottery.start_at
+      let [hour, minute] = inputTime.split(':').map(Number)
+      if (hour === 24) {
+        hour = 0
+      }
+      const now = DateTime.now().setZone('Asia/Tehran')
+      let target = now.set({ hour, minute, second: 0, millisecond: 0 })
+      let secondsRemaining = 0
+      if (target > now) {
+        secondsRemaining = target.diff(now, 'seconds').seconds
+      }
+      lottery.seconds_remaining = secondsRemaining
+    }
     const cards: { active: number; number: string; name: string }[] = JSON.parse(
       settings.first((item) => item.key === 'card_to_card')?.value ?? '[]'
     )
@@ -79,7 +79,7 @@ export default class SettingController {
     const games = await Room.query().select(['game']).distinct('game').where('is_active', true)
 
     return response.json({
-      // lottery: lottery,
+      lottery: lottery,
       games: games.map((item) => {
         return {
           title: i18n.t(`messages.${item.game}`),
