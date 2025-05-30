@@ -371,17 +371,30 @@ export default class RoomController {
         // const p = JSON.stringify(Object.values(pAll).map((v) => JSON.parse(v)))
         // console.log(p)
         // console.log(typeof p)
-        emitter.emit('room-update', {
-          type: roomType,
-          cmnd: 'card-added',
-          game_id: room.clearCount,
-          cards: room.cardCount /* */,
-          players: room.players /* p*/,
-          start_with_me: room.startWithMe,
-          seconds_remaining: room.playerCount > 1 ? room.secondsRemaining : room.maxSeconds,
-          player_count: room.playerCount /* await redis.hlen(room.type)*/,
-          card_count: room.cardCount,
-        })
+        let attach = {}
+        if (roomType == 'lottery')
+          emitter.emit('room-update', {
+            type: roomType,
+            cmnd: 'card-added',
+            game_id: room.clearCount,
+            cards: room.cardCount /* */,
+            players: room.players /* p*/,
+            player_count: room.playerCount /* await redis.hlen(room.type)*/,
+            card_count: room.cardCount,
+            ...(await Lottery.emmitInfo(room.cardCount * room.cardPrice)),
+          })
+        else
+          emitter.emit('room-update', {
+            type: roomType,
+            cmnd: 'card-added',
+            game_id: room.clearCount,
+            cards: room.cardCount /* */,
+            players: room.players /* p*/,
+            start_with_me: room.startWithMe,
+            seconds_remaining: room.playerCount > 1 ? room.secondsRemaining : room.maxSeconds,
+            player_count: room.playerCount /* await redis.hlen(room.type)*/,
+            card_count: room.cardCount,
+          })
 
         return response.json({
           user_balance: userFinancials.balance - debit,
