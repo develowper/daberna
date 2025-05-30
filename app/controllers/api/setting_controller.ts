@@ -76,7 +76,11 @@ export default class SettingController {
     const blackjackHelp = JSON.parse(
       settings.first((item: any) => item && item.key == 'blackjack_help')?.value ?? '[]'
     )
-    const games = await Room.query().select(['game']).distinct('game').where('is_active', true)
+    const games = await Room.query()
+      .select(['game'])
+      .distinct('game')
+      .where('is_active', true)
+      .where('game', 'daberna')
 
     return response.json({
       lottery: lottery,
