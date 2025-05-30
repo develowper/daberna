@@ -52,6 +52,7 @@ export default class SettingController {
       let secondsRemaining = target.diff(now, 'seconds').seconds
       secondsRemaining = Math.round(secondsRemaining < 0 ? 0 : secondsRemaining)
 
+      lottery.room_id = 10
       lottery.seconds_remaining = secondsRemaining
     }
     const cards: { active: number; number: string; name: string }[] = JSON.parse(
