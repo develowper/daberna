@@ -384,6 +384,7 @@ export default class RoomController {
         //     ...(await Lottery.emmitInfo(room.cardCount * room.cardPrice)),
         //   })
         // else
+
         emitter.emit('room-update', {
           type: roomType,
           cmnd: 'card-added',
