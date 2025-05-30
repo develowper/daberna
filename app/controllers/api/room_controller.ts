@@ -35,7 +35,7 @@ export default class RoomController {
     if (request.input('id')) query = query.where('id', request.input('id'))
     if (request.input('game'))
       query = query.where('game', request.input('game')).where('is_active', true)
-    else query = query.where('game', 'daberna')
+    else if (!request.input('id')) query = query.where('game', 'daberna')
     let data = await query
 
     data = data.map((item: Room) => {
