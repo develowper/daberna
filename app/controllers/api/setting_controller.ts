@@ -39,8 +39,8 @@ export default class SettingController {
     appInfo.version = Number(appInfo.version)
     // const ads: any = JSON.parse(settings.first((item) => item.key === 'ads')?.value ?? '[]')
 
-    const lottery: any = JSON.parse(settings.first((item) => item.key === 'lottery')?.value ?? '[]')
-    lottery.seconds_remaining = 0
+    // const lottery: any = JSON.parse(settings.first((item) => item.key === 'lottery')?.value ?? '[]')
+    // lottery.seconds_remaining = 0
     // if (`${lottery?.active}` == '1') {
     //   const inputTime = lottery.start_at
     //   let [hour, minute] = inputTime.split(':').map(Number)
@@ -79,7 +79,7 @@ export default class SettingController {
     const games = await Room.query().select(['game']).distinct('game').where('is_active', true)
 
     return response.json({
-      lottery: lottery,
+      // lottery: lottery,
       games: games.map((item) => {
         return {
           title: i18n.t(`messages.${item.game}`),
