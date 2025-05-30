@@ -23,6 +23,7 @@ import { storage } from '../../../resources/js/storage.js'
 import db from '@adonisjs/lucid/services/db'
 import Telegram from '#services/telegram_service'
 import redis from '@adonisjs/redis/services/main'
+import Lottery from '#models/lottery'
 
 @inject()
 export default class RoomController {
@@ -193,6 +194,7 @@ export default class RoomController {
     const user = auth.user as User
     const roomType = request.input('room_type')
     const cardCount = Number.parseInt(request.input('card_count'))
+    const cardNumber = Number.parseInt(request.input('card_number')) //lottery
     const ip = request.ip()
     const trx = await db.transaction()
 
@@ -211,7 +213,7 @@ export default class RoomController {
       //   })
       // }
 
-      const room = await Room.query({ client: trx })
+      const room: Room = await Room.query({ client: trx })
         .where('is_active', true)
         .where('type', roomType)
         .forUpdate()
@@ -241,6 +243,7 @@ export default class RoomController {
         })
       }
 */
+
       const userBeforeCardCounts = await room.getUserCardCount()
 
       if (userBeforeCardCounts + cardCount > room.maxUserCardsCount) {
@@ -286,8 +289,22 @@ export default class RoomController {
           }),
         })
       }
-
-      if (await room.setUserCardsCount(userBeforeCardCounts + cardCount, user, ip, trx)) {
+      let addRes
+      if (roomType == 'lottery') {
+        addRes = await room.setLotteryCardCount(cardNumber, user, ip, trx)
+        if (addRes != 'added') {
+          await trx.rollback()
+          return response.status(400).json({
+            message: i18n.t('messages.validate.min', {
+              item: i18n.t('messages.wallet'),
+              value: `${asPrice(totalPrice)} ${i18n.t(`messages.${addRes}`)}`,
+            }),
+          })
+        } else addRes = true
+      } else {
+        addRes = await room.setUserCardsCount(userBeforeCardCounts + cardCount, user, ip, trx)
+      }
+      if (addRes) {
         if (userBeforeCardCounts === 0) {
           room.playerCount = room.playerCount + 1 /*await redis.hlen(room.type)*/
           user.playCount++

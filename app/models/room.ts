@@ -11,6 +11,7 @@ import redis from '@adonisjs/redis/services/main'
 import Telegram from '#services/telegram_service'
 import db from '@adonisjs/lucid/services/db'
 import { TransactionClient } from '@adonisjs/lucid/build/src/transaction_client/index.js'
+import { TransactionClientContract } from '@adonisjs/lucid/types/database'
 
 // import { HttpContext } from '@adonisjs/http-server/build/standalone'
 // @inject()
@@ -208,7 +209,7 @@ export default class Room extends BaseModel {
     let result = false
     const parsed: any = JSON.parse(this.players) ?? []
     const beforeExists = collect(parsed).first((item: any) => item.user_id == user.id)
-
+    /*
     const lockAcquired = await redis.set(this.lockKey, '1', 'PX', 200, 'NX')
     if (!lockAcquired) return false // Lock already exists, skip
     if (
@@ -226,7 +227,7 @@ export default class Room extends BaseModel {
     ) {
       return false
     }
-
+*/
     // await redis.hset(
     //   `${this.type}`,
     //   user.id,
@@ -259,10 +260,53 @@ export default class Room extends BaseModel {
     }
     this.players = JSON.stringify(res)
     this.$dirty.players = true
-    await redis.del(this.lockKey)
+    /*  await redis.del(this.lockKey)*/
     return true
   }
+  async setLotteryCardCount(
+    cardNumber: number,
+    us: User,
+    ip: string,
+    trx: TransactionClientContract
+  ): Promise<any> {
+    const user = us ?? this.auth?.user
+    if (!user) return false
+    let res: any[] = []
+    let result = ''
+    const parsed: any = JSON.parse(this.players) ?? []
+    const beforeUser = collect(parsed).first((item: any) => item.user_id == user.id)
 
+    if (collect(parsed).first((item: any) => item.card_numbers.includes(cardNumber))) {
+      return 'card_bought_before'
+    }
+    if (!beforeUser) {
+      parsed.unshift({
+        user_id: user.id,
+        username: user.username,
+        user_role: user.role,
+        user_ip: ip,
+        card_count: 1,
+        card_numbers: [cardNumber],
+      })
+      res = parsed
+      if (parsed.length > 0) this.starterId = user.id
+    } else {
+      const cardNumbers = [...(beforeUser.card_numbers ?? []), cardNumber]
+
+      res = collect(parsed)
+        .map((item: any) => {
+          if (item.user_id == user.id) {
+            item.card_numbers = cardNumbers
+            item.card_count = cardNumbers.length
+          }
+          return item
+        })
+        .toArray()
+    }
+    this.players = JSON.stringify(res)
+    this.$dirty.players = true
+    return 'added'
+  }
   public async setUser(us: any = null, cmnd = 'add') {
     const user = us ?? this.auth?.user
     let res: any[] = []

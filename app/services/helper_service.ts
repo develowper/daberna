@@ -203,7 +203,7 @@ class Helper {
       'dooz',
       'blackjack',
     ],
-    fromTypes: ['agency', 'user', 'admin', 'daberna', 'blackjack', 'dooz'],
+    fromTypes: ['agency', 'user', 'admin', 'daberna', 'blackjack', 'dooz', 'lottery'],
     colors: {
       win: 'green',
       row_win: 'teal',
@@ -259,9 +259,10 @@ class Helper {
     USER: 3,
     STATISTICS: 16,
     BUG: 18,
+    LOTTERY: null,
   }
   public static ADMIN_ROLES = ['go', 'ad']
-  public static GAMES = ['daberna', 'dooz', 'blackjack']
+  public static GAMES = ['daberna', 'dooz', 'blackjack', 'lottery']
   public static BLOCK_IPS = [
     /*'94.24.99.175', '5.121.179.55', '91.108.5.21', '45.32.192.18'*/
   ]
@@ -755,6 +756,16 @@ class Helper {
             { q: '', a: '', active: 0 },
             { q: '', a: '', active: 0 },
           ],
+        }),
+      },
+      {
+        key: 'lottery',
+        title: __('lottery'),
+        value: JSON.stringify({
+          active: 0,
+          title: '',
+          winners_percent: `50\n30\n10`,
+          start_at: '24:00',
         }),
       },
       // {
