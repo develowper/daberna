@@ -766,6 +766,7 @@ class Helper {
           title: '',
           winners_percent: `50\n30\n10`,
           start_at: '24:00',
+          winners: null,
         }),
       },
       // {
