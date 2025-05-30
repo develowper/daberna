@@ -15,7 +15,7 @@ export default class Lottery extends BaseModel {
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime
 
-  static emmitInfo(sum) {
+  static async emmitInfo(sum) {
     const setting = await Setting.findBy('key', 'lottery')
     const lottery: any = JSON.parse(setting?.value ?? '[]')
 
