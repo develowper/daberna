@@ -56,6 +56,7 @@ export default class SettingController {
       if (target > now) {
         secondsRemaining = target.diff(now, 'seconds').seconds
       }
+
       lottery.seconds_remaining = secondsRemaining
     }
     const cards: { active: number; number: string; name: string }[] = JSON.parse(
