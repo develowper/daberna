@@ -51,11 +51,8 @@ export default class SettingController {
       console.log(hour, minute)
       const now = DateTime.now().setZone('Asia/Tehran')
       let target = now.set({ hour, minute, second: 0, millisecond: 0 })
-      console.log('target', target, target > now)
-      let secondsRemaining = 0
-      if (target > now) {
-        secondsRemaining = target.diff(now, 'seconds').seconds
-      }
+      let secondsRemaining = target.diff(now, 'seconds').seconds
+      console.log('seconds', secondsRemaining)
 
       lottery.seconds_remaining = secondsRemaining
     }
