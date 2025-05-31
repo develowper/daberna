@@ -295,10 +295,7 @@ export default class RoomController {
         if (addRes != 'added') {
           await trx.rollback()
           return response.status(400).json({
-            message: i18n.t('messages.validate.min', {
-              item: i18n.t('messages.wallet'),
-              value: `${asPrice(totalPrice)} ${i18n.t(`messages.${addRes}`)}`,
-            }),
+            message: i18n.t(`messages.${addRes}`),
           })
         } else addRes = true
       } else {
