@@ -24,7 +24,8 @@ export default class Lottery extends BaseModel {
   static async emmitInfo(room, settings = null) {
     const setting = settings ?? (await Setting.findBy('key', 'lottery'))
     const lottery: any = JSON.parse(setting?.value ?? '[]')
-    lottery.status = Number(lottery.status)
+    lottery.status = Number(lottery.status ?? 0)
+    if (lottery.status == 0) return { status: 0 }
     let [hour, minute] = `${lottery.start_at}`.split(':').map(Number)
     // if (hour === 24) {
     //   hour = 0
