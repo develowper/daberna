@@ -129,6 +129,10 @@ export default class Lottery extends BaseModel {
         .where('key', 'lottery')
         .update('value', JSON.stringify(lottery))
 
+      room.playerCount = 0
+      room.cardCount = 0
+      room.players = null
+      room.startAt = null
       room.isActive = true
       await room.useTransaction(trx).save()
 
