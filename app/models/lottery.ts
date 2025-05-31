@@ -78,7 +78,7 @@ export default class Lottery extends BaseModel {
 
       console.log('numbers', usedNumbers)
       const winners = []
-
+      const financialCache = new Map()
       //
       for (let prize of lottery.prizes ?? []) {
         console.log('prize', prize)
@@ -92,7 +92,10 @@ export default class Lottery extends BaseModel {
         const user = await User.query().where('id', userId).preload('financial').first()
         if (!user) continue
         console.log('user', user.username)
-        const financial = user.financial ?? (await user.related('financial').create({ balance: 0 }))
+        let financial
+        if (financialCache.has(userId)) financial = financialCache.get(userId)
+        financial =
+          financial ?? user.financial ?? (await user.related('financial').create({ balance: 0 }))
 
         const beforeBalance = Number(financial.balance)
         financial.balance = Number(financial.balance) + Number(prize)
@@ -121,8 +124,8 @@ export default class Lottery extends BaseModel {
           { client: trx }
         )
 
-        await user.financial.useTransaction(trx).save()
-        await trx.commit()
+        await financial.useTransaction(trx).save()
+        financialCache.set(userId, financial)
 
         transaction.user = user
         transactions.push(transaction)
