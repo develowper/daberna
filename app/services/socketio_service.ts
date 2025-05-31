@@ -117,7 +117,7 @@ export default class SocketIo {
         if (!data || !this.user) return
         socket.leave(`room-${data?.type}`)
         const room = await Room.query()
-          .whereNot('game', 'daberna')
+          .whereNotIn('game', ['daberna', 'lottery'])
           .where('type', data?.type)
           .first()
         if (room) {
