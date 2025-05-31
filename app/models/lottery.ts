@@ -57,7 +57,7 @@ export default class Lottery extends BaseModel {
 
     console.log(`hour: ${hour}:${now.hour}`, `minute: ${minute}:${now.minute}`)
     if (hour == 24) hour = 0
-    // if (now.hour != hour || now.minute != minute) return null
+    if (now.hour != hour || now.minute != minute) return null
 
     const transactions = []
     lottery = await db.transaction(async (trx) => {
