@@ -49,6 +49,14 @@ export default class Lottery extends BaseModel {
     const setting = await Setting.findBy('key', 'lottery')
     let lottery: any = JSON.parse(setting?.value ?? '[]')
     if (lottery.status != 1) return null
+
+    const now = DateTime.now().setZone('Asia/Tehran')
+    let [hour, minute] = `${lottery.start_at}`.split(':').map(Number)
+
+    console.log(`hour: ${hour}:${now.hour}`, `minute: ${minute}:${now.minute}`)
+    if (hour == 24) hour = 0
+    if (now.hour != hour || now.minute != minute) return null
+
     const transactions = []
     lottery = await db.transaction(async (trx) => {
       const room: Room = await Room.query({ client: trx })
