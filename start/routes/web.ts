@@ -22,8 +22,10 @@ import collect from 'collect.js'
 import env from '#start/env'
 import { af } from '@faker-js/faker/dist/airline-BnpeTvY9.js'
 import redis from '@adonisjs/redis/services/main'
+import Lottery from "#models/lottery";
 export default function () {
   router.get('test', async () => {
+    return await Lottery.createGame()
     return
     await redis.set('testKey', 'testValue', 'EX', 90)
     await sleep(2000)
