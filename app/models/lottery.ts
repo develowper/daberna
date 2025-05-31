@@ -70,7 +70,7 @@ export default class Lottery extends BaseModel {
       await room.useTransaction(trx).save()
 
       lottery = await Lottery.emmitInfo(room, setting)
-
+      lottery.id = (lottery?.id ?? 0) + 1
       //find winners
 
       const players = JSON.parse(room.players ?? '[]')
@@ -78,6 +78,7 @@ export default class Lottery extends BaseModel {
 
       console.log('numbers', usedNumbers)
       const winners = []
+
       //
       for (let prize of lottery.prizes ?? []) {
         console.log('prize', prize)
@@ -120,8 +121,9 @@ export default class Lottery extends BaseModel {
           { client: trx }
         )
 
-        await financial.useTransaction(trx).save()
-        user.financial = financial
+        await user.financial.useTransaction(trx).save()
+        await trx.commit()
+
         transaction.user = user
         transactions.push(transaction)
         winners.push({
@@ -131,7 +133,7 @@ export default class Lottery extends BaseModel {
           prize: prize,
         })
       }
-      lottery.id = (lottery?.id ?? 0) + 1
+
       lottery.winners = winners
       lottery.status = 2
       console.log('winners', winners)
