@@ -353,8 +353,8 @@ export default class SocketIo {
           clearInterval(SocketIo.timer4)
           return
         }
-        // const lottery = await Lottery.createGame()
 
+        // const lottery = await Lottery.createGame()
         // clearInterval(SocketIo.timer2)
       }, 30000)
     })
