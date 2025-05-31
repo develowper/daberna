@@ -202,6 +202,7 @@ class Helper {
       'winwheel',
       'dooz',
       'blackjack',
+      'lottery',
     ],
     fromTypes: ['agency', 'user', 'admin', 'daberna', 'blackjack', 'dooz', 'lottery'],
     colors: {
