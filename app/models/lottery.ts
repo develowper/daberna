@@ -121,6 +121,7 @@ export default class Lottery extends BaseModel {
         )
 
         await financial.useTransaction(trx).save()
+        user.financial = financial
         transaction.user = user
         transactions.push(transaction)
         winners.push({
