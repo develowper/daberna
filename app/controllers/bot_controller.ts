@@ -463,7 +463,9 @@ export default class BotController {
           const agencyTypes = agencyIds.map((agency) => `a_${agency.id}`)
 
           const types = [
-            ...Helper.ROOMS.filter((i) => i.game == 'daberna').map((item) => item.type),
+            ...Helper.ROOMS.filter((i) => ['daberna', 'lottery'].includes(i.game)).map(
+              (item) => item.type
+            ),
             ...agencyTypes,
           ]
 
