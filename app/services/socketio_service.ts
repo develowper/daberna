@@ -28,6 +28,8 @@ import db from '@adonisjs/lucid/services/db'
 import Blackjack from '#models/blackjack'
 import redis from '@adonisjs/redis/services/main'
 import Admin from '#models/admin'
+import Setting from '#models/setting'
+import Lottery from '#models/lottery'
 declare module 'socket.io' {
   interface Socket {
     context: HttpContext
@@ -40,6 +42,7 @@ export default class SocketIo {
   public static timer1
   public static timer2
   public static timer3
+  public static timer4
   constructor(/*protected app: ApplicationService*/) {
     // console.log('*********   socket service created ')
     // console.log(Daberna.makeCard())
@@ -228,6 +231,7 @@ export default class SocketIo {
         clearInterval(SocketIo.timer1)
         clearInterval(SocketIo.timer2)
         clearInterval(SocketIo.timer3)
+        clearInterval(SocketIo.timer4)
       })
 
       SocketIo.timer1 = setInterval(async () => {
@@ -342,6 +346,17 @@ export default class SocketIo {
 
         // clearInterval(SocketIo.timer2)
       }, 5000)
+
+      //timer lottery
+      SocketIo.timer4 = setInterval(async () => {
+        if (app.isTerminated || app.isTerminating) {
+          clearInterval(SocketIo.timer4)
+          return
+        }
+        // const lottery = await Lottery.createGame()
+
+        // clearInterval(SocketIo.timer2)
+      }, 30000)
     })
   }
 
