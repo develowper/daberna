@@ -10,6 +10,8 @@ import collect from 'collect.js'
 import emitter from '@adonisjs/core/services/emitter'
 import Transaction from '#models/transaction'
 import Telegram from '#services/telegram_service'
+import Log from '#models/log'
+import AgencyFinancial from '#models/agency_financial'
 
 export default class Lottery extends BaseModel {
   @column({ isPrimary: true })
@@ -73,6 +75,7 @@ export default class Lottery extends BaseModel {
       lottery = await Lottery.emmitInfo(room, setting)
       lottery.id = (lottery?.id ?? 0) + 1
       //find winners
+      let commissionPrice = room.cardCount * room.cardPrice
 
       const players = JSON.parse(room.players ?? '[]')
       const usedNumbers = shuffle(players.map((i) => i.card_numbers).flat() ?? [])
@@ -117,8 +120,8 @@ export default class Lottery extends BaseModel {
             payedAt: DateTime.now(),
             title: __(`*_from_*_to_*`, {
               item1: __(`win`),
-              item2: `${__(`lottery`)} (${lottery.id ?? 1})`,
-              item3: `${__(`user`)} (${user?.id})`,
+              item2: `${__(`lottery`)}${room.cardPrice} (${lottery.id ?? 1})`,
+              item3: `${__(`user`)}  (${user?.id})`,
             }),
             info: JSON.stringify({ before_balance: beforeBalance, after_balance: afterBalance }),
           },
@@ -127,7 +130,7 @@ export default class Lottery extends BaseModel {
 
         await financial.useTransaction(trx).save()
         financialCache.set(userId, financial)
-
+        commissionPrice -= Number(prize)
         transaction.user = user
         transactions.push(transaction)
         winners.push({
@@ -137,13 +140,41 @@ export default class Lottery extends BaseModel {
           prize: prize,
         })
       }
-
       lottery.winners = winners
       lottery.status = 2
       console.log('winners', winners)
       await Setting.query({ client: trx })
         .where('key', 'lottery')
         .update('value', JSON.stringify(lottery))
+
+      if (commissionPrice != 0) {
+        const af = await AgencyFinancial.find(1)
+        af.balance += commissionPrice
+        await af.useTransaction(trx).save()
+        // console.log('commissionTransaction', commissionPrice)
+        await Transaction.add(
+          'commission',
+          'lottery',
+          lottery.id ?? 1,
+          'agency',
+          af.agencyId,
+          commissionPrice,
+          af.agencyId,
+          null,
+          __(`*_from_*_to_*`, {
+            item1: __(`commission`),
+            item2: `${__(`lottery`)}${room.cardPrice} (${lottery.id ?? 1})`,
+            item3: `${__(`agency`)} (${af.agencyId})`,
+          })
+        )
+      }
+      await Log.add(
+        room.type,
+        room.cardCount,
+        1,
+        commissionPrice,
+        DateTime.now().startOf('day').toJSDate()
+      )
 
       room.playerCount = 0
       room.cardCount = 0
