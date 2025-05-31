@@ -372,7 +372,7 @@ export default class RoomController {
         // console.log(p)
         // console.log(typeof p)
         if (roomType == 'lottery') {
-          const attach = await Lottery.emmitInfo(room.cardCount * room.cardPrice)
+          const attach = await Lottery.emmitInfo(room)
           emitter.emit('room-update', {
             type: roomType,
             cmnd: 'card-added',

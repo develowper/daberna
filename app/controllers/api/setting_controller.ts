@@ -6,6 +6,7 @@ import { collect } from 'collect.js'
 import { json } from 'stream/consumers'
 import Room from '#models/room'
 import { DateTime } from 'luxon'
+import Lottery from '#models/lottery'
 @inject()
 export default class SettingController {
   // constructor(protected helper: Helper) {
@@ -39,22 +40,10 @@ export default class SettingController {
     appInfo.version = Number(appInfo.version)
     // const ads: any = JSON.parse(settings.first((item) => item.key === 'ads')?.value ?? '[]')
 
-    const lottery: any = JSON.parse(settings.first((item) => item.key === 'lottery')?.value ?? '[]')
-    lottery.seconds_remaining = 0
-    if (lottery?.active == 1) {
-      const inputTime = lottery.start_at
-      let [hour, minute] = inputTime.split(':').map((i) => Number(i))
-      // if (hour === 24) {
-      //   hour = 0
-      // }
-      const now = DateTime.now().setZone('Asia/Tehran')
-      let target = now.set({ hour, minute, second: 0, millisecond: 0 })
-      let secondsRemaining = target.diff(now, 'seconds').seconds
-      secondsRemaining = Math.round(secondsRemaining < 0 ? 0 : secondsRemaining)
+    let lottery: any = settings.first((item) => item.key === 'lottery')
 
-      lottery.room_id = 10
-      lottery.seconds_remaining = secondsRemaining
-    }
+    lottery = await Lottery.emmitInfo(await Room.find(10), lottery)
+
     const cards: { active: number; number: string; name: string }[] = JSON.parse(
       settings.first((item) => item.key === 'card_to_card')?.value ?? '[]'
     )

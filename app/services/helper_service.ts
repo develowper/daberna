@@ -764,7 +764,7 @@ class Helper {
         value: JSON.stringify({
           active: 0,
           title: '',
-          winners_percent: `50\n30\n10`,
+          winners_prize: `50\n30\n10`,
           start_at: '24:00',
           winners: null,
         }),
