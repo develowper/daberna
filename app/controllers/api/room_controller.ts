@@ -291,6 +291,15 @@ export default class RoomController {
       }
       let addRes
       if (roomType == 'lottery') {
+        const setting = await Setting.findBy('key', 'lottery')
+        let lottery: any = JSON.parse(setting?.value ?? '[]')
+        if (Number(lottery.status) != 1) {
+          await trx.rollback()
+          return response.status(400).json({
+            message: i18n.t('messages.is_inactive_*', { item: i18n.t('lottery') }),
+          })
+        }
+
         addRes = await room.setLotteryCardCount(cardNumber, user, ip, trx)
         if (addRes != 'added') {
           await trx.rollback()
