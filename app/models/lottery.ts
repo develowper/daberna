@@ -51,13 +51,13 @@ export default class Lottery extends BaseModel {
   static async createGame() {
     const setting = await Setting.findBy('key', 'lottery')
     let lottery: any = JSON.parse(setting?.value ?? '[]')
-    console.log('status', lottery.status)
+    // console.log('status', lottery.status)
     if (lottery.status != 1) return null
 
     const now = DateTime.now().setZone('Asia/Tehran')
     let [hour, minute] = `${lottery.start_at}`.split(':').map(Number)
 
-    console.log(`hour: ${hour}:${now.hour}`, `minute: ${minute}:${now.minute}`)
+    // console.log(`hour: ${hour}:${now.hour}`, `minute: ${minute}:${now.minute}`)
     if (hour == 24) hour = 0
     if (now.hour != hour || now.minute != minute) return null
 

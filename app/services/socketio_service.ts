@@ -357,7 +357,7 @@ export default class SocketIo {
         const lottery = await Lottery.createGame()
         if (lottery) await this.emitToRoom(`room-lottery`, 'game-start', lottery)
         // clearInterval(SocketIo.timer2)
-      }, 30000)
+      }, 10000)
     })
   }
 
