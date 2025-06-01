@@ -42,7 +42,7 @@ export default class Log extends BaseModel {
     log.cardCount = (log.cardCount ?? 0) + cardCount
     log.gameCount = (log.gameCount ?? 0) + gameCount
     log.profit = (log.profit ?? 0) + commissionPrice
-    log.save()
+    await log.save()
   }
 
   static async roomsTable(types: any[]) {
