@@ -28,7 +28,7 @@ export default class Lottery extends BaseModel {
     const lottery: any = JSON.parse(setting?.value ?? '[]')
     lottery.status = Number(lottery.status ?? 0)
     if (lottery.status == 0) return { status: 0 }
-    let [hour, minute] = `${lottery.start_at}`.split(':').map(Number)
+    let [hour, minute] = `${lottery.start}`.split(':').map(Number)
     // if (hour === 24) {
     //   hour = 0
     // }
@@ -55,7 +55,7 @@ export default class Lottery extends BaseModel {
     if (lottery.status != 1) return null
 
     const now = DateTime.now().setZone('Asia/Tehran')
-    let [hour, minute] = `${lottery.start_at}`.split(':').map(Number)
+    let [hour, minute] = `${lottery.start}`.split(':').map(Number)
 
     // console.log(`hour: ${hour}:${now.hour}`, `minute: ${minute}:${now.minute}`)
     if (hour == 24) hour = 0
