@@ -36,7 +36,7 @@ export default class Lottery extends BaseModel {
     let target = now.set({ hour, minute, second: 0, millisecond: 0 })
     let secondsRemaining = target.diff(now, 'seconds').seconds
     secondsRemaining = Math.round(secondsRemaining < 0 ? 0 : secondsRemaining)
-
+    lottery.start_at = target.toISO()
     lottery.room_id = room.id
     lottery.seconds_remaining = secondsRemaining
     const sum = room.cardCount * room.cardPrice
