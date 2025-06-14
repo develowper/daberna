@@ -216,8 +216,8 @@ export default class Telegram {
       const res = await axios.post(url, datas, {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       })
-      // console.log('**********res**********')
-      // console.log(res)
+      console.log('**********res**********')
+      console.log(res)
 
       if (res.status !== 200) {
         // this.sendMessage(`${Helper.TELEGRAM_LOGS[0]}`, `${res.data}\n${JSON.stringify(datas)}`)
