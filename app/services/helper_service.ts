@@ -481,7 +481,8 @@ class Helper {
     { title: Helper.__('processing'), key: 'processing', color: 0xff4477ce },
     { title: Helper.__('closed'), key: 'closed', color: 0xffe74646 },
   ]
-
+  // public static TELEGRAM_BOT_LINK: string = 'https://bot.soheil-market.ir/api/bot/telegram/daberna'
+  public static TELEGRAM_BOT_LINK: string = 'https://bot.dinamit-home.ir/api/bot/telegram/paris'
   public static TELEGRAM_BOT: string = 'daberna_bot'
   public static TELEGRAM_CHANNEL: string = 'dabernaparis'
   public static MARKETS = {
