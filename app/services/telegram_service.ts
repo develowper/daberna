@@ -211,7 +211,7 @@ export default class Telegram {
     // const url = `https://api.telegram.org/bot${env.get('DABERNA_TELEGRAM_BOT_TOKEN')}/${method}`
     datas['cmnd'] = method
     datas['bot_name'] = 'paris'
-
+    console.log(url)
     try {
       const res = await axios.post(url, datas, {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -224,8 +224,8 @@ export default class Telegram {
       }
       return res.data
     } catch (error) {
-      // console.log(error)
-      this.logAdmins(JSON.stringify(error), null, Helper.TELEGRAM_TOPICS.BUG)
+      console.log(error)
+      // this.logAdmins(JSON.stringify(error), null, Helper.TELEGRAM_TOPICS.BUG)
       // this.sendMessage(`${Helper.TELEGRAM_LOGS[0]}`, `${error.message}\n${JSON.stringify(datas)}`)
       return null
     }
