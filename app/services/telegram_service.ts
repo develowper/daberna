@@ -210,6 +210,7 @@ export default class Telegram {
     const url = Helper.TELEGRAM_BOT_LINK
     // const url = `https://api.telegram.org/bot${env.get('DABERNA_TELEGRAM_BOT_TOKEN')}/${method}`
     datas['cmnd'] = method
+    datas['bot_name'] = 'paris'
 
     try {
       const res = await axios.post(url, datas, {
