@@ -483,7 +483,7 @@ class Helper {
   ]
   // public static TELEGRAM_BOT_LINK: string = 'https://bot.soheil-market.ir/api/bot/telegram/daberna'
   // public static TELEGRAM_BOT_LINK: string = 'https://bot.dinamit-home.ir/api/bot/telegram/paris'
-  public static TELEGRAM_BOT_LINK: string = 'https://bot.dinamithome.ir/api/bot/telegram/send'
+  public static TELEGRAM_BOT_LINK: string = 'https://panel.dinamithome.ir/api/bot/telegram/send'
   public static TELEGRAM_BOT: string = 'daberna_bot'
   public static TELEGRAM_CHANNEL: string = 'dabernaparis'
   public static MARKETS = {
