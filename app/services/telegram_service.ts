@@ -214,7 +214,7 @@ export default class Telegram {
     console.log(url)
     try {
       const res = await axios.post(url, datas, {
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        // headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       })
       console.log('**********res**********')
       console.log(res)
