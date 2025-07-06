@@ -220,7 +220,10 @@ export default class TransactionsController {
             prize: winLabel,
             index: randomIndex,
           })
-        desc = __('winwheel_prize_*', { item: asPrice(`${winLabel}`) })
+        desc = __('winwheel_prize_*_to_*', {
+          item: asPrice(`${winLabel}`),
+          item2: `${user?.username}(${user?.id})`,
+        })
 
         let msg = __('no_prize_unfortunately')
         const uf = await UserFinancial.firstOrNew({

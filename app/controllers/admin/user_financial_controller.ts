@@ -53,7 +53,7 @@ export default class UserFinancialController {
         })
       else
         query.where((q) => {
-          q.orWhere('users.id', `%${search}%`)
+          q.orWhere('users.id', `${search}`)
             .orWhere('users.full_name', 'like', `%${search}%`)
             .orWhere('users.phone', 'like', `%${search}%`)
             .orWhere('users.username', 'like', `%${search}%`)

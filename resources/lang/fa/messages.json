@@ -128,7 +128,7 @@
   "add_from_profile_*": "لطفا {item} خود را در قسمت پروفایل ثبت نمایید",
   "room_*": "اتاق {item} تومانی",
   "*_is_*": "{item1} {item2} است",
-  "winwheel_prize_*": "جایزه گردونه {item} تومان",
+  "winwheel_prize_*_to_*": "جایزه گردونه {item} تومان به {item2}",
   "responded": "پاسخ داده شده",
   "processing": "در حال پردازش",
   "closed": "بسته شده",

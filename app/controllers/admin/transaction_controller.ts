@@ -246,7 +246,7 @@ export default class TransactionController {
         const randomIndex = Math.floor(Math.random() * winWheel.labels.length)
         const winLabel = Number.parseInt(`${winWheel.labels[randomIndex]}`)
 
-        desc = __('winwheel_prize_*', { item: asPrice(`${winLabel}`) })
+        desc = __('winwheel_prize_*_to_*', { item: asPrice(`${winLabel}`) })
 
         const transaction = await Transaction.create({
           agencyId: user?.agencyId,
