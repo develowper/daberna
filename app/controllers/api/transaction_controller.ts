@@ -228,7 +228,6 @@ export default class TransactionsController {
         let msg = __('no_prize_unfortunately')
         const uf = await UserFinancial.firstOrNew({
           userId: user?.id,
-          balance: 0,
         })
         uf.balance = Number(uf.balance)
 
