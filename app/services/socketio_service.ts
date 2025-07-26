@@ -283,7 +283,7 @@ export default class SocketIo {
         }
         // clearInterval(SocketIo.timer)
       }, 4000)
-
+      /*
       //timer dooz
       SocketIo.timer2 = setInterval(async () => {
         if (app.isTerminated || app.isTerminating) {
@@ -358,6 +358,8 @@ export default class SocketIo {
         if (lottery) await this.emitToRoom(`room-lottery`, 'game-start', lottery)
         // clearInterval(SocketIo.timer2)
       }, 10000)
+
+   */
     })
   }
 

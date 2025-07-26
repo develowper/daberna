@@ -53,7 +53,8 @@ export default class SettingController {
     const supportMessage: any = JSON.parse(
       settings.first((item) => item.key === 'support_message')?.value ?? '{}'
     )
-    supportMessage.questions = collect(supportMessage.questions ?? []).whereIn('active', '1', 1)
+    supportMessage.questions = collect(supportMessage.questions ?? []).whereIn('active', ['1', 1])
+
     const telegramBot = settings.first((item: any) => item && item.key == 'telegram_bot')?.value
     const supportTelegram = settings.first((item: any) => item && item.key == 'support_telegram')
     const supportEmail = settings.first((item: any) => item && item.key == 'support_email')

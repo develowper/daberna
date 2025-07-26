@@ -45,7 +45,7 @@ export default class SettingController {
     data.key = request.input('key')
     data.value = request.input('value')
 
-    data.save()
+    await data.save()
     Telegram.log(null, 'setting_edited', data)
 
     return response.json({ message: __('updated_successfully'), status: 'success' })
