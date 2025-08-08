@@ -124,6 +124,7 @@ export default class Transaction extends BaseModel {
             mobile: phone,
             email: mail,
             order_id: `${orderId}`,
+            referrer_id: `32BvX0l`,
           }
 
           try {
