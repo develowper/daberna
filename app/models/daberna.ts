@@ -617,8 +617,8 @@ export default class Daberna extends BaseModel {
       updates.push({ user_id: user.id, balance: financial.balance })
       l += `userId:${user.id}(${user.username}) buy:${buy} [${from}] \n`
     }
-    // if (logText != '')
-    //   Telegram.logAdmins(`${logText}\n ${l}`, null, null ?? Helper.TELEGRAM_TOPICS.DABERNA_GAME)
+    if (logText != '')
+      Telegram.logAdmins(`${logText}\n ${l}`, null, null ?? Helper.TELEGRAM_TOPICS.DABERNA_GAME)
 
     room.playerCount = 0
     room.cardCount = 0
