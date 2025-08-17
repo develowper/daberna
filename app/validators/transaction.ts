@@ -6,7 +6,7 @@ export const chargeValidator = vine.compile(
     amount: vine
       .number()
       .withoutDecimals()
-      .min(Helper.MIN_CHARGE)
+      .min(0)
       .optional()
       .requiredWhen('type', 'notIn', ['winwheel']),
     type: vine.string().in(Helper.TRANSACTION.types),

@@ -8,7 +8,7 @@ import {
   withdrawValidator,
 } from '#validators/transaction'
 import Transaction from '#models/transaction'
-import Helper, { __, asPrice, getSettings } from '#services/helper_service'
+import Helper, { __, asPrice, getSettings, createWordpressOrder } from '#services/helper_service'
 import { DateTime } from 'luxon'
 import User from '#models/user'
 import Admin from '#models/admin'
@@ -63,16 +63,30 @@ export default class TransactionsController {
             }),
           })
         }
+        const minCharge = await getSettings('min_charge')
+        if (amount < minCharge) {
+          return response.status(Helper.ERROR_STATUS).json({
+            status: 'danger',
+            message: __('validate.min', {
+              item: __('charge'),
+              value: `${asPrice(`${minCharge}`)} ${__('currency')}`,
+            }),
+          })
+        }
 
         desc = __('wallet_charge_*_by_*', {
           item1: `${asPrice(`${amount}`)} ${__('currency')}`,
           item2: `${__(fromType)} (${user?.username ?? fromId})`,
         })
+        const bankDesc = __('buy_*_by_*', {
+          item1: `${asPrice(`${amount}`)} ${__('currency')}`,
+          item2: `${__(fromType)}[${fromId}] (${user.fullName ?? user?.username ?? fromId})`,
+        })
         const res = await Transaction.makePayUrl(
           orderId,
           amount,
-          user?.username as string,
-          desc,
+          user?.fullName ?? user?.username,
+          bankDesc,
           user?.phone,
           user?.id
         )
@@ -85,7 +99,7 @@ export default class TransactionsController {
           agencyId: user?.agencyId,
           title: desc,
           type: type,
-          gateway: Helper.BANK,
+          gateway: res.gateway,
           fromType: 'user',
           fromId: user?.id,
           toType: 'user',
@@ -94,6 +108,7 @@ export default class TransactionsController {
           payId: res.order_id,
           gatewayId: res.gateway_id,
           appVersion: appVersion,
+          info: JSON.stringify({ bank_fee: res.fee }), //fee
         })
 
         // }
@@ -430,9 +445,25 @@ export default class TransactionsController {
           await financial.save()
           afterBalance = financial?.balance ?? 0
         }
+        const fee = Number(
+          (() => {
+            try {
+              return (
+                (typeof t?.info === 'string' ? JSON.parse(t.info) : transaction?.info)?.bank_fee ??
+                0
+              )
+            } catch {
+              return 0
+            }
+          })()
+        )
         transaction?.merge({
           payedAt: now,
-          info: JSON.stringify({ before_balance: beforeBalance, after_balance: afterBalance }),
+          info: JSON.stringify({
+            bank_fee: fee, //fee
+            before_balance: beforeBalance,
+            after_balance: afterBalance,
+          }),
         })
         await transaction.save()
         if (userType == 'user') {
@@ -441,6 +472,12 @@ export default class TransactionsController {
             .update({ lastTransaction: now.toFormat('yyyy-MM-dd HH:mm:ss') })
         }
         transaction.user = user
+        createWordpressOrder({
+          fullname: user?.fullName,
+          username: user?.username,
+          phone: user?.phone,
+          amount: Number(transaction.amount) + fee, //fee
+        })
         Telegram.log(null, 'transaction_created', transaction)
       }
       return inertia.render('Invoice', {

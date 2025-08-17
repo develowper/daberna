@@ -22,6 +22,9 @@ import { io } from 'socket.io-client'
 import { Encryption } from '@adonisjs/core/encryption'
 import Blackjack from '#models/blackjack'
 import db from '@adonisjs/lucid/services/db'
+import axios from 'axios'
+import string from '@adonisjs/core/helpers/string'
+import Telegram from '#services/telegram_service'
 
 const encryption = new Encryption({
   secret: env.get('ENC_KEY', ''),
@@ -232,7 +235,7 @@ class Helper {
   public static ENAMAD = `<a referrerpolicy='origin' target='_blank' href='https://trustseal.enamad.ir/?id=565455&Code=WNIwA9GN3WFa1TNq7pu6HeHTJCQzv9T6'><img referrerpolicy='origin' src='https://trustseal.enamad.ir/logo.aspx?id=565455&Code=WNIwA9GN3WFa1TNq7pu6HeHTJCQzv9T6' alt='' style='cursor:pointer' code='WNIwA9GN3WFa1TNq7pu6HeHTJCQzv9T6'></a>`
   public static APP_VERSION = 4
   public static PAGINATE = 24
-  public static MIN_CHARGE = 1000
+  public static MIN_CHARGE = 50000
   public static MIN_WITHDRAW = 100000
   public static CALL_SPEED = 1000
   public static ROOM_REFRESH_TIME = 10
@@ -1029,6 +1032,46 @@ class Helper {
   }
   static isPG() {
     return env.get('DB_CONNECTION') == 'pg'
+  }
+  static cropText(str, maxLen) {
+    if (str.length <= maxLen) return str
+    // Use Array.from to handle multi-byte chars correctly
+    return Array.from(str).slice(0, maxLen).join('')
+  }
+  static async createWordpressOrder(data: any) {
+    const baseUrl = env.get('SHOP_URL')
+    const adminUser = env.get('SHOP_USERNAME')
+    const adminPass = env.get('SHOP_PASSWORD')
+    const auth: any = {
+      username: adminUser,
+      password: adminPass,
+    }
+    const customLink = `${baseUrl}/wp-json/custom/v1/register-order`
+
+    const croppedUsername = cropText(data['username'], 50)
+    const d = {
+      username: croppedUsername,
+      nickname: string.slug(data['username']),
+      email: `${string.slug(croppedUsername)}@example.com`,
+      password: data['username'],
+      roles: ['customer'],
+      phone: data['phone'],
+      amount: data['amount'],
+      fullname: data['fullname'],
+    }
+    try {
+      await axios.post(customLink, d, {
+        auth,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+      })
+      return
+    } catch (e) {
+      Telegram.log(null, 'error', JSON.stringify(e?.response?.data))
+      // console.warn(e)
+    }
   }
 }
 

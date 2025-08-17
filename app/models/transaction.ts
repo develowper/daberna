@@ -5,6 +5,7 @@ import Env from '#start/env'
 import axios from 'axios'
 import collect from 'collect.js'
 import Setting from '#models/setting'
+import Telegram from '#services/telegram_service'
 export default class Transaction extends BaseModel {
   @computed()
   public get createdAtShamsi() {
@@ -112,13 +113,75 @@ export default class Transaction extends BaseModel {
     bank = bank || Helper.BANK
 
     try {
+      const gateway = await Transaction.getAPI('ZARINPAL')
+      bank = (bank || gateway.key || Helper.BANK)?.toLowerCase()
+      const defaultFee = 900
+      let fee = defaultFee
+
       switch (bank) {
+        case 'zibal':
+          fee = 0
+          try {
+            const response = await axios.post(
+              'https://gateway.zibal.ir/v1/request',
+              {
+                merchant: gateway?.value,
+                amount: `${price}0`,
+                callbackUrl: `https://${Env.get('APP_URL')}/api/payment/done`,
+                description: `خریدار: ${payerName}`,
+                mobile: phone,
+                email: mail,
+                orderId: `${orderId}`,
+              },
+              {
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Accept': 'application/json',
+                },
+              }
+            )
+            const zibalResult = response.data
+            // console.log(zibalResult)
+            if (zibalResult && zibalResult.result === 100) {
+              return {
+                status: 'success',
+                gateway: bank,
+                fee: fee / 10, //fee
+                order_id: zibalResult.trackId,
+                gateway_id: gateway?.title,
+                url: `https://gateway.zibal.ir/start/${zibalResult.trackId}`,
+              }
+            } else {
+              return { status: 'danger', message: __('problem_get_pay_link') }
+            }
+          } catch (error) {
+            return {
+              status: 'danger',
+              message: error?.response?.data?.errors?.message ?? __('problem_get_pay_link'),
+            }
+          }
         case 'zarinpal':
-          const gateway = await Transaction.getAPI('ZARINPAL')
+          //fee
+          // const feeResponse = await fetch(
+          //   'https://payment.zarinpal.com/pg/v4/payment/feeCalculation.json',
+          //   {
+          //     method: 'POST',
+          //     headers: {
+          //       'Content-Type': 'application/json', // Important for sending JSON
+          //     },
+          //     body: JSON.stringify({
+          //       merchant_id: gateway?.value,
+          //       amount: `${price}0`,
+          //     }),
+          //   }
+          // )
+          // const feeResult: any = await feeResponse.json()
+          // fee = Number(feeResult?.data?.fee ?? 0) ?? fee * 10
+          fee = 0
 
           const zarinpalData = {
-            merchant_id: gateway?.key /*?? Env.get('ZARINPAL_TOKEN')*/,
-            amount: `${price}0`,
+            merchant_id: gateway?.value /*?? Env.get('ZARINPAL_TOKEN')*/,
+            amount: Number(`${price}0`) + fee, //
             callback_url: `https://${Env.get('APP_URL')}/api/payment/done`,
             description: description,
             mobile: phone,
@@ -144,6 +207,8 @@ export default class Transaction extends BaseModel {
             if (result && result.data.code === 100) {
               return {
                 status: 'success',
+                gateway: bank,
+                fee: fee / 10, //fee
                 order_id: result.data.authority,
                 gateway_id: gateway?.title,
                 url: `https://www.zarinpal.com/pg/StartPay/${result.data.authority}`,
@@ -211,11 +276,11 @@ export default class Transaction extends BaseModel {
         case 'payping':
           try {
             const response = await axios.post(
-              'https://api.payping.ir/v2/pay',
+              'https://api.payping.ir/v3/pay',
               {
-                clientRefId: orderId,
-                Amount: `${price}0`,
-                ReturnUrl: `${Env.get('APP_URL')}/api/payment/done`,
+                clientRefId: `${orderId}`,
+                amount: Number(`${price}`) + fee,
+                returnUrl: `https://${Env.get('APP_URL')}/api/payment/done`,
                 payerName: payerName,
                 payerIdentity: phone,
                 mail: mail,
@@ -223,29 +288,40 @@ export default class Transaction extends BaseModel {
               },
               {
                 headers: {
-                  'authorization': `Bearer ${Env.get('PAYPING_TOKEN')}`,
+                  'authorization': `Bearer ${gateway?.value}`,
                   'Content-Type': 'application/json',
                 },
               }
             )
 
             const data = response.data
-
-            if (response.status === 200) {
+            // console.log(response.data)
+            //data.amount مبلغ دستور پرداخت
+            //data.payerWage مبلغ کارمزد پرداخت کننده
+            //data.businessWage مبلغ کارمزد پذیرنده
+            //data.gatewayAmount مبلغ نهایی پرداخت
+            if (data?.url) {
               return {
                 status: 'success',
+                gateway: bank,
                 order_id: orderId,
-                url: `https://api.payping.ir/v2/pay/gotoipg/${data.code}`,
+                fee: fee, //fee
+                // url: `https://api.payping.ir/v2/pay/gotoipg/${data.code}`,
+                url: data.url,
+                gateway_id: gateway?.title,
               }
             } else if (response.status === 400) {
-              return { status: 'danger', message: data }
+              return { status: 'danger', message: String(data?.metaData?.errors) }
             } else {
               return { status: 'danger', message: response.status }
             }
           } catch (error) {
-            return { status: 'danger', message: process.env.ERROR_MESSAGE }
-          }
+            // Telegram.log(null, 'error', JSON.stringify(error?.response))
+            // console.warn(error?.response?.data)
+            // console.warn(error?.response?.data?.metaData?.errors)
 
+            return { status: 'danger', message: __('payment_fail') }
+          }
         default:
           return { status: 'danger', message: 'Invalid bank specified' }
       }
@@ -255,20 +331,81 @@ export default class Transaction extends BaseModel {
   }
 
   public static async confirmPay(request: any, bank?: string): Promise<any> {
-    bank = bank || Helper.BANK
+    let payId
+    if (request.input('Authority')) {
+      payId = request.input('Authority')
+      bank = 'zarinpal'
+    } else if (request.input('Shaparak_Ref_Id')) {
+      payId = request.input('Shaparak_Ref_Id')
+      bank = 'nextpay'
+    } else if (request.input('data')) {
+      const all = request.all()
+      try {
+        const parsedData = JSON.parse(all?.data)
+        request.updateBody({ ...all, ...parsedData })
+      } catch (e) {
+        // console.warn(e)
+      }
+      payId = request.input('clientRefId')
+      bank = 'payping'
+    } else if (request.input('trackId')) {
+      payId = request.input('trackId')
+      bank = 'zibal'
+    }
+    if (!payId) return { status: 'danger', message: __('payment_fail') }
+    const t = await Transaction.query().where('pay_id', payId).first()
+    const payToken = await Transaction.getAPI(bank.toUpperCase(), t?.gatewayId)
+
+    const fee = Number(
+      (() => {
+        try {
+          return (typeof t?.info === 'string' ? JSON.parse(t.info) : t?.info)?.bank_fee ?? 0
+        } catch {
+          return 0
+        }
+      })()
+    )
 
     try {
       switch (bank) {
+        case 'zibal':
+          let zibalResult: any = {}
+          if (request && request.input('status') == 2) {
+            const amount = Number(t?.amount ?? 0) * 10 + fee * 10 //fee + amount
+
+            const data = {
+              merchant: payToken /*?? Env.get('ZARINPAL_TOKEN')*/,
+              trackId: `${payId}`,
+            }
+            try {
+              const response = await axios.post('https://gateway.zibal.ir/v1/verify', data, {
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Accept': 'application/json',
+                },
+              })
+              zibalResult = response.data
+
+              // console.log(zibalResult)
+              // console.log(zibalResult?.result)
+              if (zibalResult?.result == 100) {
+                return { status: 'success', order_id: `${payId}`, info: zibalResult }
+              }
+              if (zibalResult?.result == 201) {
+                return { status: 'danger', message: __('factor_payed_before') }
+              }
+            } catch (e) {
+              return { status: 'danger', message: __('payment_fail') }
+            }
+          }
         case 'zarinpal':
           let result: any = {}
           if (request && request.input('Status') === 'OK') {
-            const t = await Transaction.query().where('pay_id', request.input('Authority')).first()
+            const amount = Number(t?.amount ?? 0) * 10 + fee * 10 //fee + amount
+
             const data = {
-              merchant_id: await Transaction.getAPI(
-                'ZARINPAL',
-                t?.gatewayId
-              ) /*?? Env.get('ZARINPAL_TOKEN')*/,
-              amount: (t?.amount ?? 0) * 10,
+              merchant_id: payToken /*?? Env.get('ZARINPAL_TOKEN')*/,
+              amount: amount, //fee
               authority: request.input('Authority'),
             }
 
@@ -307,7 +444,7 @@ export default class Transaction extends BaseModel {
               return { status: 'danger', message: process.env.ERROR_CONFIRM_MESSAGE }
             } else {
               const params = {
-                api_key: Env.get('NEXPAY_TOKEN'),
+                api_key: payToken,
                 trans_id: request.trans_id,
                 amount: request.amount,
                 currency: 'IRR',
@@ -363,7 +500,6 @@ export default class Transaction extends BaseModel {
       }
     }
   }
-
   static async getAPI(key, confirm = null) {
     //confirm
     if (confirm) {
@@ -372,13 +508,20 @@ export default class Transaction extends BaseModel {
         .where('title', confirm)
         .first()?.value
     }
-
+    let res
     //pay
-    const res = collect(JSON.parse((await Setting.findBy({ key: 'gateways' }))?.value ?? '[]'))
-      .where('key', key)
-      .whereIn('active', ['1', 1, true])
-      .random()
+    const val = await Setting.findBy({ key: 'gateways' })
+    if (key)
+      res = collect(JSON.parse(val?.value ?? '[]'))
+        .where('key', key)
+        .whereIn('active', ['1', 1, true])
+        .random()
+    else if (!key)
+      res = collect(JSON.parse(val?.value ?? '[]'))
+        // .where('key', key)
+        .whereIn('active', ['1', 1, true])
+        .random()
 
-    return { key: res?.value, title: res?.title }
+    return res
   }
 }
