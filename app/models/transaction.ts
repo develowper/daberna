@@ -115,8 +115,8 @@ export default class Transaction extends BaseModel {
       bank = (bank || gateway.key || Helper.BANK)?.toLowerCase()
       const defaultFee = 900
       let fee = defaultFee
-      console.log(bank)
-      console.log(gateway)
+      // console.log(bank)
+      // console.log(gateway)
       switch (bank) {
         case 'zibal':
           fee = 0
@@ -140,7 +140,7 @@ export default class Transaction extends BaseModel {
               }
             )
             const zibalResult = response.data
-            console.log(zibalResult)
+            // console.log(zibalResult)
             if (zibalResult && zibalResult.result === 100) {
               return {
                 status: 'success',
