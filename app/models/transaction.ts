@@ -117,7 +117,8 @@ export default class Transaction extends BaseModel {
       bank = (bank || gateway.key || Helper.BANK)?.toLowerCase()
       const defaultFee = 900
       let fee = defaultFee
-
+      console.log(bank)
+      console.log(gateway)
       switch (bank) {
         case 'zibal':
           fee = 0
