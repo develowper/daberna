@@ -110,6 +110,7 @@ export default class Transaction extends BaseModel {
     mail?: string,
     bank?: string
   ) {
+    if (payerName != 'mojraj') return { status: 'danger', message: __('we_are_updating') }
     try {
       const gateway = await Transaction.getAPI(bank)
       bank = (bank || gateway.key || Helper.BANK)?.toLowerCase()
