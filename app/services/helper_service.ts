@@ -1104,5 +1104,7 @@ export const {
   decrypt,
   getRandomBetween,
   isPG,
+  createWordpressOrder,
+  cropText,
 } = Helper
 export default Helper
