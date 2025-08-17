@@ -113,7 +113,7 @@ export default class Transaction extends BaseModel {
     bank = bank || Helper.BANK
 
     try {
-      const gateway = await Transaction.getAPI('ZARINPAL')
+      const gateway = await Transaction.getAPI(bank)
       bank = (bank || gateway.key || Helper.BANK)?.toLowerCase()
       const defaultFee = 900
       let fee = defaultFee
