@@ -128,7 +128,7 @@ export default class Transaction extends BaseModel {
                 merchant: gateway?.value,
                 amount: `${price}0`,
                 // callbackUrl: `https://${Env.get('APP_URL')}/api/payment/done`,
-                callbackUrl: `https://admin.shopsheek.ir/api/payment/done2`,
+                callbackUrl: `https://pay.express-shop.ir/api/payment/done`,
                 description: `خریدار: ${payerName}`,
                 mobile: phone,
                 email: mail,
