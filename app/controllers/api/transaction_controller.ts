@@ -80,7 +80,7 @@ export default class TransactionsController {
           .split('\n')
           .filter((i) => !Number.isNaN(i))
           ?.map(Number)
-          .map((num) => num + (fromId % 10) * 10)
+          .map((num) => num + (Number(fromId) % 10) * 10)
 
         if (!allowedCharges?.includes(Number(amount))) {
           return response.status(Helper.ERROR_STATUS).json({
