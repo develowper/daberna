@@ -80,7 +80,7 @@ export default class TransactionsController {
           .split('\n')
           .filter((i) => !Number.isNaN(i))
           ?.map(Number)
-          .map(
+          ?.map(
             (num) =>
               num + (Number(fromId) % 10) * (num.toString().match(/0+$/)?.[0].length || 0) * 10
           )
