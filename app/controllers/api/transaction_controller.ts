@@ -63,13 +63,29 @@ export default class TransactionsController {
             }),
           })
         }
-        const minCharge = await getSettings('min_charge')
-        if (amount < minCharge) {
+        // const minCharge = await getSettings('min_charge')
+        // if (amount < minCharge) {
+        //   return response.status(Helper.ERROR_STATUS).json({
+        //     status: 'danger',
+        //     message: __('validate.min', {
+        //       item: __('charge'),
+        //       value: `${asPrice(`${minCharge}`)} ${__('currency')}`,
+        //     }),
+        //   })
+        // }
+        //allowed_charges
+        let allowedCharges = await getSettings('allowed_charges')
+
+        allowedCharges = (allowedCharges ?? [])
+          .split('\n')
+          .filter((i) => !Number.isNaN(i))
+          ?.map(Number)
+        if (!allowedCharges?.includes(Number(amount))) {
           return response.status(Helper.ERROR_STATUS).json({
             status: 'danger',
-            message: __('validate.min', {
-              item: __('charge'),
-              value: `${asPrice(`${minCharge}`)} ${__('currency')}`,
+            message: __('validator_in', {
+              item1: `${__('charge')}`,
+              item2: '\n' + allowedCharges.join('\n'),
             }),
           })
         }

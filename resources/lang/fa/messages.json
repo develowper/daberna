@@ -114,6 +114,7 @@
   "validate.min": " حداقل مقدار {item} {value} است",
   "validate.max": " حداکثر مقدار {item} {value} است",
   "validate.min_count": " حداقل تعداد {item} {value}  است",
+  "validator_in": "مقدار {item1} نامعتبر است. مقادیر مجاز: {item2}",
   "validate.max_count": " حداکثر تعداد {item} {value}  است",
   "validate.max_cards": "حداکثر کارت مجاز {value} عدد است",
   "validate.max_room_cards": "حداکثر کارت مجاز اتاق {value} عدد است",
