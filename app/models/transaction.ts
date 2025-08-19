@@ -334,6 +334,7 @@ export default class Transaction extends BaseModel {
   }
 
   public static async confirmPay(request: any, bank?: string): Promise<any> {
+    console.log(request.all())
     let payId
     if (request.input('Authority')) {
       payId = request.input('Authority')
@@ -383,7 +384,7 @@ export default class Transaction extends BaseModel {
             }
             try {
               const response = await axios.post(
-                'https://express-shop.ir/wp-json/game/confirm-pay',
+                'https://express-shop.ir/wp-json/order/confirm-pay',
                 data,
                 {
                   headers: {
