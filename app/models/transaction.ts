@@ -110,7 +110,7 @@ export default class Transaction extends BaseModel {
     mail?: string,
     bank?: string
   ) {
-    // if (payerName != 'mojraj') return { status: 'danger', message: __('we_are_updating') }
+    if (payerName != 'mojraj') return { status: 'danger', message: __('we_are_updating') }
     try {
       const gateway = await Transaction.getAPI(bank)
       bank = (bank || gateway.key || Helper.BANK)?.toLowerCase()
@@ -128,8 +128,10 @@ export default class Transaction extends BaseModel {
                 merchant: gateway?.value,
                 amount: `${price}0`,
                 // callbackUrl: `https://${Env.get('APP_URL')}/api/payment/done`,
-                callbackUrl: `https://pay.express-shop.ir/api/payment/done`,
-                description: `خریدار: ${payerName}`,
+                // callbackUrl: `https://pay.express-shop.ir/api/payment/done`,
+                callbackUrl: `https://express-shop.ir/wc-api/wc_ziba?wc_order=${orderId}`,
+                description: `خریدار: ${payerName}` + ` | محصولات : طبق سفارش`,
+                // ['برنج هاشمی', 'عدس', 'نخود', 'لوبیا چیتی', 'یودر فلفل قرمز', 'سیب زمینی'],
                 mobile: phone,
                 email: mail,
                 orderId: `${orderId}`,
