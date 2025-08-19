@@ -377,19 +377,31 @@ export default class Transaction extends BaseModel {
             const amount = Number(t?.amount ?? 0) * 10 + fee * 10 //fee + amount
 
             const data = {
-              merchant: payToken /*?? Env.get('ZARINPAL_TOKEN')*/,
+              url: 'https://gateway.zibal.ir/v1/verify',
+              merchant: payToken,
               trackId: `${payId}`,
             }
             try {
-              const response = await axios.post('https://gateway.zibal.ir/v1/verify', data, {
-                headers: {
-                  'Content-Type': 'application/json',
-                  'Accept': 'application/json',
-                },
-              })
+              const response = await axios.post(
+                'https://express-shop.ir/wp-json/game/confirm-pay',
+                data,
+                {
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                  },
+                }
+              )
+
+              // const response = await axios.post('https://gateway.zibal.ir/v1/verify', data, {
+              //   headers: {
+              //     'Content-Type': 'application/json',
+              //     'Accept': 'application/json',
+              //   },
+              // })
               zibalResult = response.data
 
-              // console.log(zibalResult)
+              console.log(zibalResult)
               // console.log(zibalResult?.result)
               if (zibalResult?.result == 100) {
                 return { status: 'success', order_id: `${payId}`, info: zibalResult }
