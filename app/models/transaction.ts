@@ -110,7 +110,7 @@ export default class Transaction extends BaseModel {
     mail?: string,
     bank?: string
   ) {
-    if (payerName != 'mojraj') return { status: 'danger', message: __('we_are_updating') }
+    // if (payerName != 'mojraj') return { status: 'danger', message: __('we_are_updating') }
     try {
       const gateway = await Transaction.getAPI(bank)
       bank = (bank || gateway.key || Helper.BANK)?.toLowerCase()
@@ -334,7 +334,7 @@ export default class Transaction extends BaseModel {
   }
 
   public static async confirmPay(request: any, bank?: string): Promise<any> {
-    console.log(request.all())
+    // console.log(request.all())
     let payId
     if (request.input('Authority')) {
       payId = request.input('Authority')
@@ -402,7 +402,7 @@ export default class Transaction extends BaseModel {
               // })
               zibalResult = response.data
 
-              console.log(zibalResult)
+              // console.log(zibalResult)
               // console.log(zibalResult?.result)
               if (zibalResult?.result == 100) {
                 return { status: 'success', order_id: `${payId}`, info: zibalResult }
