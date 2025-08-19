@@ -121,30 +121,39 @@ export default class Transaction extends BaseModel {
       switch (bank) {
         case 'zibal':
           fee = 0
+          let data = {
+            url: 'https://gateway.zibal.ir/v1/request',
+            merchant: gateway?.value,
+            amount: `${price}0`,
+            // callbackUrl: `https://${Env.get('APP_URL')}/api/payment/done`,
+            // callbackUrl: `https://pay.express-shop.ir/api/payment/done`,
+            callbackUrl: `https://express-shop.ir/wc-api/wc_ziba?wc_order=${orderId}`,
+            description: `خریدار: ${payerName}` + ` | محصولات : طبق سفارش`,
+            // ['برنج هاشمی', 'عدس', 'نخود', 'لوبیا چیتی', 'یودر فلفل قرمز', 'سیب زمینی'],
+            mobile: phone,
+            email: mail,
+            orderId: `${orderId}`,
+          }
           try {
+            const response = await axios.post('https://express-shop.ir/wp-json/order/pay', data, {
+              headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+              },
+            })
+            /*
             const response = await axios.post(
               'https://gateway.zibal.ir/v1/request',
-              {
-                merchant: gateway?.value,
-                amount: `${price}0`,
-                // callbackUrl: `https://${Env.get('APP_URL')}/api/payment/done`,
-                // callbackUrl: `https://pay.express-shop.ir/api/payment/done`,
-                callbackUrl: `https://express-shop.ir/wc-api/wc_ziba?wc_order=${orderId}`,
-                description: `خریدار: ${payerName}` + ` | محصولات : طبق سفارش`,
-                // ['برنج هاشمی', 'عدس', 'نخود', 'لوبیا چیتی', 'یودر فلفل قرمز', 'سیب زمینی'],
-                mobile: phone,
-                email: mail,
-                orderId: `${orderId}`,
-              },
+             data,
               {
                 headers: {
                   'Content-Type': 'application/json',
                   'Accept': 'application/json',
                 },
               }
-            )
+            )*/
             const zibalResult = response.data
-            // console.log(zibalResult)
+            console.log(zibalResult)
             if (zibalResult && zibalResult.result === 100) {
               return {
                 status: 'success',
@@ -383,16 +392,12 @@ export default class Transaction extends BaseModel {
               trackId: `${payId}`,
             }
             try {
-              const response = await axios.post(
-                'https://express-shop.ir/wp-json/order/confirm-pay',
-                data,
-                {
-                  headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                  },
-                }
-              )
+              const response = await axios.post('https://express-shop.ir/wp-json/order/pay', data, {
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Accept': 'application/json',
+                },
+              })
 
               // const response = await axios.post('https://gateway.zibal.ir/v1/verify', data, {
               //   headers: {
