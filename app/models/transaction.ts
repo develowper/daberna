@@ -153,7 +153,7 @@ export default class Transaction extends BaseModel {
               }
             )*/
             const zibalResult = response.data
-            console.log(zibalResult)
+            // console.log(zibalResult)
             if (zibalResult && zibalResult.result === 100) {
               return {
                 status: 'success',
