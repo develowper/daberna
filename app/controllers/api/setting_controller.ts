@@ -1,5 +1,5 @@
 import type { HttpContext } from '@adonisjs/core/http'
-import Helper from '../../services/helper_service.js'
+import Helper, {__, asPrice} from '../../services/helper_service.js'
 import { inject } from '@adonisjs/core'
 import Setting from '../../models/setting.js'
 import { collect } from 'collect.js'
@@ -13,8 +13,9 @@ export default class SettingController {
 
   // }
 
-  async get({ response, request, i18n }: HttpContext) {
+  async get({ response, request, i18n, auth }: HttpContext) {
     const appVersion = request.input('version') ?? 1
+    const userId = auth.user?.id
     const settings = collect(
       await Setting.query().whereIn('key', [
         'support_links',
@@ -32,8 +33,19 @@ export default class SettingController {
         'app_info',
         'support_message',
         'lottery',
+        'allowed_charges',
       ])
     )
+    const allowedCharges =
+      __('allowed_charges') +
+      ':\n' +
+      (settings.first((item) => item.key == 'allowed_charges')?.value ?? [])
+        .split('\n')
+        .filter((i) => !Number.isNaN(i))
+        ?.map(Number)
+        ?.map((num) => num + (Number(userId) % 10) * 10 ** (num.toString().length - 2))
+        ?.map(asPrice)
+        .join(' ')
     const appInfo: any = JSON.parse(
       settings.first((item) => item.key === 'app_info')?.value ?? '[]'
     )
@@ -93,7 +105,7 @@ export default class SettingController {
       card_to_card: collect(cards).where('active', '1').random(),
       policy: policy,
       support_message: supportMessage,
-      charge_title: settings.first((item) => item.key == 'charge_title')?.value,
+      charge_title: allowedCharges,
       card_to_card_title: settings.first((item) => item.key == 'card_to_card_title')?.value,
       withdraw_title: settings.first((item) => item.key == 'withdraw_title')?.value,
       room_refresh_time: Helper.ROOM_REFRESH_TIME,
