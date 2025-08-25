@@ -494,7 +494,7 @@ export default class Transaction extends BaseModel {
 
   public static async confirmPay(request: any, bank?: string): Promise<any> {
     // bank = bank || Helper.BANK
-    // console.log(request.all())
+    console.log(request.all())
     //payping:clientRefId,amount,gatewayAmount
 
     let payId
